@@ -75,4 +75,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public void setOnItemClickListener(final OnItemClickListener mItemClickListener) {
         this.mItemClickListener = mItemClickListener;
     }
+
+    public void setmDataset(String[] dataset){
+        mDataset = dataset;
+    }
 }

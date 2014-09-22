@@ -10,12 +10,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.Random;
+
 
 public class MainActivity extends Activity {
     private Activity self = this;
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    String[] dataset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +35,7 @@ public class MainActivity extends Activity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Create dataset
-        String[] dataset = new String[100];
+        dataset = new String[100];
         for (int i = 0; i < dataset.length; i++) {
             dataset[i] = "item" + i;
         }
@@ -56,7 +59,7 @@ public class MainActivity extends Activity {
         // set item animator to DefaultAnimator
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        mAdapter.notifyDataSetChanged();
+
 
     }
 
@@ -76,7 +79,20 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        }else if(id == R.id.action_refresh){
+            dataset = new String[100];
+
+            for (int i = 0; i < dataset.length; i++) {
+                dataset[i] = "item" + randInt(0,dataset.length);
+            }
+            mAdapter.setmDataset(dataset);
+            mAdapter.notifyDataSetChanged();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static int randInt(int min , int max) {
+        Random rand = new Random();
+        return rand.nextInt((max - min) + 1) + min;
     }
 }
