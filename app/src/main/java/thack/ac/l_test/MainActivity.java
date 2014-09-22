@@ -1,7 +1,9 @@
 package thack.ac.l_test;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,8 +11,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
 import java.util.Random;
+
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.User;
+import twitter4j.conf.ConfigurationBuilder;
 
 
 public class MainActivity extends Activity {
@@ -20,15 +38,22 @@ public class MainActivity extends Activity {
     private RecyclerView.LayoutManager mLayoutManager;
     String[] dataset;
 
+    //Twitter related
+    TwitterFactory tf;
+    Twitter twitter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Set up twitter4j
+        setUpTwitter4j();
+
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
 
         // improve performance if you know that changes in content
         // do not change the size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
+        //mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
@@ -59,7 +84,7 @@ public class MainActivity extends Activity {
         // set item animator to DefaultAnimator
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-
+        new fetchFromTwitter().execute();
 
     }
 
@@ -80,13 +105,13 @@ public class MainActivity extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }else if(id == R.id.action_refresh){
+            //Refresh the dataset
             dataset = new String[100];
-
             for (int i = 0; i < dataset.length; i++) {
                 dataset[i] = "item" + randInt(0,dataset.length);
             }
-            mAdapter.setmDataset(dataset);
-            mAdapter.notifyDataSetChanged();
+            new fetchFromTwitter().execute();
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -95,4 +120,62 @@ public class MainActivity extends Activity {
         Random rand = new Random();
         return rand.nextInt((max - min) + 1) + min;
     }
+
+    public void setUpTwitter4j(){
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true)
+                .setOAuthConsumerKey("vdKT4mCY9D2eK6y238veerGgj")
+                .setOAuthConsumerSecret("SnrCTLQATvT8FC4jo0pDI5FtyzDrjjHJBssdGnH4qp6tWaPhW6")
+                .setOAuthAccessToken("63657268-GW9QhBmRVEV2MNcBBAB4kulGrkQo3xU4CpYZgTy2e")
+                .setOAuthAccessTokenSecret("HSnEWnW22xEv6M8Db5X0eko2pSQc22r1IK7K2k6n15R7m");
+        tf = new TwitterFactory(cb.build());
+        twitter = tf.getInstance();
+    }
+
+    /**
+     * Async Task to make http call and sync with server
+     */
+    private class fetchFromTwitter extends AsyncTask<Void, Void, Void>{
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(self);
+            this.dialog.setMessage("Getting tweets...");
+            this.dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                // gets Twitter instance with default credentials
+                User user = twitter.verifyCredentials();
+                List<twitter4j.Status> statuses = twitter.getHomeTimeline();
+                System.out.println("Showing @" + user.getScreenName() + "'s home timeline.");
+                int i = 0;
+                for (twitter4j.Status status : statuses) {
+                    System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
+                    dataset[i] = "@" + status.getUser().getScreenName() + " - " + status.getText();
+                    i++;
+                }
+            } catch (TwitterException te) {
+                te.printStackTrace();
+                Toast.makeText(self, "Failed to get timeline: " + te.getMessage(), Toast.LENGTH_SHORT).show();
+                System.out.println("Failed to get timeline: " + te.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            mAdapter.setmDataset(dataset);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
 }
