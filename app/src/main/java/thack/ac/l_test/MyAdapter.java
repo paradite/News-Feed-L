@@ -13,11 +13,12 @@ import android.widget.Toast;
  */
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private String[] mDataset;
+    OnItemClickListener mItemClickListener;
 
 
     // Provide a reference to the type of views that you are using
     // (custom viewholder)
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView mTextView;
         public ImageView imgViewIcon;
         public ViewHolder(View v) {
@@ -28,8 +29,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
 
         @Override
-        public void onClick(View view) {
-            Toast.makeText(view.getContext(), mTextView.getText() + " position = " + getPosition(), Toast.LENGTH_SHORT).show();
+        public void onClick(View v) {
+            Toast.makeText(v.getContext(), mTextView.getText() + " position = " + getPosition(), Toast.LENGTH_SHORT).show();
+            if (mItemClickListener != null) {
+                mItemClickListener.onItemClick(v, getPosition());
+            }
         }
     }
 
@@ -66,5 +70,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return mDataset.length;
+    }
+
+    public void setOnItemClickListener(final OnItemClickListener mItemClickListener) {
+        this.mItemClickListener = mItemClickListener;
     }
 }
