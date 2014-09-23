@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -36,7 +38,8 @@ public class MainActivity extends Activity {
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    String[] dataset;
+    ArrayList<StatusItem> dataset;
+    public final String TAG = ((Object) this).getClass().getSimpleName();
 
     //Twitter related
     TwitterFactory tf;
@@ -60,10 +63,7 @@ public class MainActivity extends Activity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Create dataset
-        dataset = new String[100];
-        for (int i = 0; i < dataset.length; i++) {
-            dataset[i] = "item" + i;
-        }
+        dataset = new ArrayList<StatusItem>();
 
         // specify an adapter (see also next example)
         mAdapter = new MyAdapter(dataset);
@@ -73,9 +73,9 @@ public class MainActivity extends Activity {
             @Override
             public void onItemClick(View v , int position) {
                 // do something with position
-
                 Intent intent = new Intent();
                 intent.putExtra("pos", position);
+                intent.putExtra("content", dataset.get(position).getContent());
                 intent.setClass(self, DetailActivity.class);
                 startActivity(intent);
             }
@@ -106,10 +106,7 @@ public class MainActivity extends Activity {
             return true;
         }else if(id == R.id.action_refresh){
             //Refresh the dataset
-            dataset = new String[100];
-            for (int i = 0; i < dataset.length; i++) {
-                dataset[i] = "item" + randInt(0,dataset.length);
-            }
+            dataset = new ArrayList<StatusItem>();
             new fetchFromTwitter().execute();
 
         }
@@ -153,11 +150,9 @@ public class MainActivity extends Activity {
                 User user = twitter.verifyCredentials();
                 List<twitter4j.Status> statuses = twitter.getHomeTimeline();
                 System.out.println("Showing @" + user.getScreenName() + "'s home timeline.");
-                int i = 0;
                 for (twitter4j.Status status : statuses) {
-                    System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
-                    dataset[i] = "@" + status.getUser().getScreenName() + " - " + status.getText();
-                    i++;
+                    //Log.d(TAG, "@" + status.getUser().getScreenName() + " - " + status.getText() +"\n" + status.getUser().getProfileImageURL());
+                    dataset.add(new StatusItem(status.getUser().getScreenName(), status.getText(), status.getCreatedAt(), status.getUser().getMiniProfileImageURL()));
                 }
             } catch (TwitterException te) {
                 te.printStackTrace();

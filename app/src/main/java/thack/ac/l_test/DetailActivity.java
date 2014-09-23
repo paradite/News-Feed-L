@@ -17,8 +17,9 @@ public class DetailActivity extends Activity {
 
         //Get the index from the previous activity
         int position = getIntent().getExtras().getInt("pos");
+        String content = getIntent().getExtras().getString("content");
         TextView infoView = (TextView) findViewById(R.id.info);
-        infoView.setText("Details of item at position " + position);
+        infoView.setText(content);
     }
 
 

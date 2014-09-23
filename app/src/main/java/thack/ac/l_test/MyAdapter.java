@@ -8,29 +8,33 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 /**
  * Created by paradite on 21/9/14.
  */
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    private String[] mDataset;
+    private ArrayList<StatusItem> mDataset;
     OnItemClickListener mItemClickListener;
 
 
     // Provide a reference to the type of views that you are using
     // (custom viewholder)
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public TextView mTextView;
+        public TextView mTextViewTitle;
+        public TextView mTextViewContent;
         public ImageView imgViewIcon;
         public ViewHolder(View v) {
             super(v);
-            mTextView = (TextView) v.findViewById(R.id.item_title);
+            mTextViewTitle = (TextView) v.findViewById(R.id.item_title);
+            mTextViewContent = (TextView) v.findViewById(R.id.item_content);
             imgViewIcon = (ImageView) v.findViewById(R.id.item_icon);
             v.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(v.getContext(), mTextView.getText() + " position = " + getPosition(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(v.getContext(), mTextViewTitle.getText() + " position = " + getPosition(), Toast.LENGTH_SHORT).show();
             if (mItemClickListener != null) {
                 mItemClickListener.onItemClick(v, getPosition());
             }
@@ -38,7 +42,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(String[] myDataset) {
+    public MyAdapter(ArrayList<StatusItem> myDataset) {
         mDataset = myDataset;
     }
 
@@ -59,24 +63,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
+        StatusItem item = mDataset.get(position);
         // - replace the contents of the view with that element
-        holder.mTextView.setText(mDataset[position]);
+        holder.mTextViewTitle.setText("@" + item.getUser());
+        holder.mTextViewContent.setText(item.getContent());
         //Set the img
-        holder.imgViewIcon.setImageResource(R.drawable.ic_launcher);
-
+        holder.imgViewIcon.setImageDrawable(item.getProfileDrawable());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return mDataset.size();
     }
 
     public void setOnItemClickListener(final OnItemClickListener mItemClickListener) {
         this.mItemClickListener = mItemClickListener;
     }
 
-    public void setmDataset(String[] dataset){
+    public void setmDataset(ArrayList<StatusItem> dataset){
         mDataset = dataset;
     }
 }
