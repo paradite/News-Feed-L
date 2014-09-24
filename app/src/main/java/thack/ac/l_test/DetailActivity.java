@@ -2,32 +2,65 @@ package thack.ac.l_test;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 public class DetailActivity extends Activity {
+    LinearLayout.LayoutParams llp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        LinearLayout detailView = (LinearLayout) findViewById(R.id.detail_view);
 
         //Get the index from the previous activity
         int position = getIntent().getExtras().getInt("pos");
+        String user = getIntent().getExtras().getString("user");
         String content = getIntent().getExtras().getString("content");
         String url = getIntent().getExtras().getString("url");
-        TextView infoView = (TextView) findViewById(R.id.info);
-        TextView urlViewTitle = (TextView) findViewById(R.id.url_title);
-        TextView urlView = (TextView) findViewById(R.id.link);
+        user = "@" + user;
+
+        //Define the Layout Params
+        llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        llp.setMargins(8, 0, 8, 8); // llp.setMargins(left, top, right, bottom);
+
+        //Set up the CardViews and add the CardViews to the content view
+        CardView userCard = setupCardView(new String[]{user});
+        detailView.addView(userCard);
+        CardView contentCard = setupCardView(new String[]{content});
+        detailView.addView(contentCard);
         if(url != null){
-            urlViewTitle.setVisibility(View.VISIBLE);
-            urlView.setText(url);
+            CardView urlCard = setupCardView(new String[]{getString(R.string.url_contained_title), url});
+            detailView.addView(urlCard);
         }
-        infoView.setText(content);
+    }
+
+    private CardView setupCardView(String[] s) {
+        //Construct the CardView
+        CardView cardView = new CardView(this);
+        //Add LinearLayout to CardView
+        LinearLayout ll = new LinearLayout(this);
+        ll.setLayoutParams(llp);
+        ll.setOrientation(LinearLayout.VERTICAL);
+        cardView.addView(ll);
+
+        //Add Children views into the LinearLayout
+        for(String each_s : s){
+            TextView textView = new TextView(this);
+            textView.setText(each_s);
+            textView.setLayoutParams(llp);
+            ll.addView(textView);
+        }
+        return cardView;
     }
 
 

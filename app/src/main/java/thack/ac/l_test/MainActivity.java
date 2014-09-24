@@ -80,6 +80,7 @@ public class MainActivity extends Activity {
                 // do something with position
                 Intent intent = new Intent();
                 intent.putExtra("pos", position);
+                intent.putExtra("user", dataset.get(position).getUser());
                 intent.putExtra("content", dataset.get(position).getContent());
                 if(dataset.get(position).getUrl_contained() != null && dataset.get(position).getUrl_contained().length > 0){
                     intent.putExtra("url", dataset.get(position).getUrl_contained()[0].getText());
@@ -157,9 +158,9 @@ public class MainActivity extends Activity {
                 // gets Twitter instance with default credentials
                 User user = twitter.verifyCredentials();
                 List<twitter4j.Status> statuses = twitter.getHomeTimeline();
-                System.out.println("Showing @" + user.getScreenName() + "'s home timeline.");
+                Log.d(TAG, "Showing @" + user.getScreenName() + "'s home timeline.");
                 for (twitter4j.Status s : statuses) {
-                    Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
+                    //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
                     StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL());
                     URLEntity urls[] = s.getURLEntities();
                     if(urls.length != 0){
@@ -172,7 +173,6 @@ public class MainActivity extends Activity {
             } catch (TwitterException te) {
                 te.printStackTrace();
                 Toast.makeText(self, "Failed to get timeline: " + te.getMessage(), Toast.LENGTH_SHORT).show();
-                System.out.println("Failed to get timeline: " + te.getMessage());
             }
             return null;
         }
@@ -207,7 +207,7 @@ public class MainActivity extends Activity {
         try {
             InputStream is = (InputStream) new URL(url).getContent();
             Drawable d = Drawable.createFromStream(is, "src name");
-            Log.d("Converter: ", url + d.toString());
+            //Log.d("Converter: ", url + d.toString());
             return d;
         } catch (Exception e) {
             Log.d("Exception: ", e.toString());
