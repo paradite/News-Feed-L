@@ -1,9 +1,12 @@
 package thack.ac.l_test;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 
 public class DetailActivity extends Activity {
     LinearLayout.LayoutParams llp;
+    public final String TAG = ((Object) this).getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +35,11 @@ public class DetailActivity extends Activity {
 
         //Define the Layout Params
         llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        llp.setMargins(8, 0, 8, 8); // llp.setMargins(left, top, right, bottom);
+        int margin = (int)getResources().getDimension(R.dimen.text_img_in_card_margin);
+        //Resources r = getResources();
+        //int margin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, r.getDisplayMetrics());
+        //Log.e(TAG, "margin: " + margin);
+        llp.setMargins(margin, margin, margin, margin); // llp.setMargins(left, top, right, bottom);
 
         //Set up the CardViews and add the CardViews to the content view
         CardView userCard = setupCardView(new String[]{user});
@@ -49,15 +57,14 @@ public class DetailActivity extends Activity {
         CardView cardView = new CardView(this);
         //Add LinearLayout to CardView
         LinearLayout ll = new LinearLayout(this);
-        ll.setLayoutParams(llp);
         ll.setOrientation(LinearLayout.VERTICAL);
         cardView.addView(ll);
 
         //Add Children views into the LinearLayout
         for(String each_s : s){
             TextView textView = new TextView(this);
-            textView.setText(each_s);
             textView.setLayoutParams(llp);
+            textView.setText(each_s);
             ll.addView(textView);
         }
         return cardView;

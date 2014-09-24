@@ -1,7 +1,9 @@
 package thack.ac.l_test;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -97,6 +99,10 @@ public class MainActivity extends Activity {
 
     }
 
+    public void reFetch(){
+        new fetchFromTwitter().execute();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -114,8 +120,6 @@ public class MainActivity extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }else if(id == R.id.action_refresh){
-            //Refresh the dataset
-            dataset = new ArrayList<StatusItem>();
             new fetchFromTwitter().execute();
 
         }
@@ -158,6 +162,8 @@ public class MainActivity extends Activity {
                 // gets Twitter instance with default credentials
                 User user = twitter.verifyCredentials();
                 List<twitter4j.Status> statuses = twitter.getHomeTimeline();
+                //Reset the data set
+                dataset.clear();
                 Log.d(TAG, "Showing @" + user.getScreenName() + "'s home timeline.");
                 for (twitter4j.Status s : statuses) {
                     //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
@@ -172,7 +178,22 @@ public class MainActivity extends Activity {
                 }
             } catch (TwitterException te) {
                 te.printStackTrace();
-                Toast.makeText(self, "Failed to get timeline: " + te.getMessage(), Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(self)
+                                .setMessage("Error occurred when getting the tweets")
+                                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        reFetch();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .setCancelable(true)
+                                .show();
+                    }
+                });
             }
             return null;
         }
