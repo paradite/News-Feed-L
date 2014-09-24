@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -84,6 +85,7 @@ public class MainActivity extends Activity {
                 intent.putExtra("pos", position);
                 intent.putExtra("user", dataset.get(position).getUser());
                 intent.putExtra("content", dataset.get(position).getContent());
+                intent.putExtra("time", dataset.get(position).getExactTime());
                 if(dataset.get(position).getUrl_contained() != null && dataset.get(position).getUrl_contained().length > 0){
                     intent.putExtra("url", dataset.get(position).getUrl_contained()[0].getText());
                 }
@@ -176,6 +178,8 @@ public class MainActivity extends Activity {
                     dataset.add(new_item);
                     new DownloadImagesTask().execute(new_item);
                 }
+                //Sort by time
+                Collections.sort(dataset);
             } catch (TwitterException te) {
                 te.printStackTrace();
                 runOnUiThread(new Runnable() {

@@ -61,7 +61,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // set the view's size, margins, paddings and layout parameters
         return new ViewHolder(v);
 
-
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -71,7 +70,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         StatusItem item = mDataset.get(position);
         // - replace the contents of the view with that element
         holder.mTextViewTitle.setText("@" + item.getUser());
-        holder.mTextViewContent.setText(item.getContent());
+        //Add content and timing to the textview
+        String content_with_timing = item.getContent() + "\n" + item.getDisplayTime();
+        holder.mTextViewContent.setText(content_with_timing);
         //Set the img
         holder.imgViewIcon.setImageDrawable(item.getProfileDrawable());
     }

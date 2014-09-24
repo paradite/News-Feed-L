@@ -2,10 +2,14 @@ package thack.ac.l_test;
 
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 
 import twitter4j.URLEntity;
@@ -13,7 +17,7 @@ import twitter4j.URLEntity;
 /**
  * Created by paradite on 23/9/14.
  */
-public class StatusItem {
+public class StatusItem implements Comparable<StatusItem>{
     private String user;
     private String content;
     private Date created_at;
@@ -77,5 +81,22 @@ public class StatusItem {
 
     public void setCreated_at(Date created_at) {
         this.created_at = created_at;
+    }
+
+    public CharSequence getDisplayTime(){
+        //Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //return formatter.format(this.created_at);
+        return DateUtils.getRelativeTimeSpanString(this.created_at.getTime());
+    }
+
+    public String getExactTime(){
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ZZZ");
+        return formatter.format(this.created_at);
+        //return DateUtils.getRelativeTimeSpanString(this.created_at.getTime());
+    }
+
+    @Override
+    public int compareTo(StatusItem o) {
+        return -getCreated_at().compareTo(o.getCreated_at());
     }
 }

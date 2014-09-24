@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -30,6 +31,7 @@ public class DetailActivity extends Activity {
         int position = getIntent().getExtras().getInt("pos");
         String user = getIntent().getExtras().getString("user");
         String content = getIntent().getExtras().getString("content");
+        String time = getIntent().getExtras().getString("time");
         String url = getIntent().getExtras().getString("url");
         user = "@" + user;
 
@@ -46,8 +48,10 @@ public class DetailActivity extends Activity {
         detailView.addView(userCard);
         CardView contentCard = setupCardView(new String[]{content});
         detailView.addView(contentCard);
+        CardView timeCard = setupCardView(new String[]{time});
+        detailView.addView(timeCard);
         if(url != null){
-            CardView urlCard = setupCardView(new String[]{getString(R.string.url_contained_title), url});
+            CardView urlCard = setupURLCardView(new String[]{url});
             detailView.addView(urlCard);
         }
     }
@@ -64,6 +68,35 @@ public class DetailActivity extends Activity {
         for(String each_s : s){
             TextView textView = new TextView(this);
             textView.setLayoutParams(llp);
+            textView.setTextIsSelectable(true);
+            textView.setText(each_s);
+            ll.addView(textView);
+        }
+        return cardView;
+    }
+
+    private CardView setupURLCardView(String[] s) {
+        //Construct the CardView
+        CardView cardView = new CardView(this);
+        //Add LinearLayout to CardView
+        LinearLayout ll = new LinearLayout(this);
+        ll.setOrientation(LinearLayout.VERTICAL);
+        cardView.addView(ll);
+        //Add URL Title
+        String urlTitle = getString(R.string.url_contained_title);
+        TextView textViewTitle = new TextView(this);
+        textViewTitle.setLayoutParams(llp);
+        textViewTitle.setTextIsSelectable(true);
+        textViewTitle.setText(urlTitle);
+        ll.addView(textViewTitle);
+
+        //Add Children views into the LinearLayout
+        for(String each_s : s){
+            TextView textView = new TextView(this);
+            textView.setLayoutParams(llp);
+            //Allow links
+            textView.setAutoLinkMask(Linkify.ALL);
+            textView.setTextIsSelectable(true);
             textView.setText(each_s);
             ll.addView(textView);
         }
