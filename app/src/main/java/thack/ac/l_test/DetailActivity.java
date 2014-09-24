@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 
@@ -18,7 +19,14 @@ public class DetailActivity extends Activity {
         //Get the index from the previous activity
         int position = getIntent().getExtras().getInt("pos");
         String content = getIntent().getExtras().getString("content");
+        String url = getIntent().getExtras().getString("url");
         TextView infoView = (TextView) findViewById(R.id.info);
+        TextView urlViewTitle = (TextView) findViewById(R.id.url_title);
+        TextView urlView = (TextView) findViewById(R.id.link);
+        if(url != null){
+            urlViewTitle.setVisibility(View.VISIBLE);
+            urlView.setText(url);
+        }
         infoView.setText(content);
     }
 

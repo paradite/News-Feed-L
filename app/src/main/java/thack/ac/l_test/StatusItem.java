@@ -1,11 +1,14 @@
 package thack.ac.l_test;
 
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
+
+import twitter4j.URLEntity;
 
 /**
  * Created by paradite on 23/9/14.
@@ -16,13 +19,24 @@ public class StatusItem {
     private Date created_at;
     private String profile_url;
     private Drawable profileDrawable;
+    private URLEntity[] url_contained;
+
+    public URLEntity[] getUrl_contained() {
+        return url_contained;
+    }
+
+    public void setUrl_contained(URLEntity[] url_contained) {
+        this.url_contained = url_contained;
+    }
 
     public StatusItem(String user, String content, Date created_at, String profile_url) {
         this.user = user;
         this.content = content;
         this.created_at = created_at;
         this.profile_url = profile_url;
-        this.profileDrawable = LoadImageFromWebOperations(profile_url);
+        //this.profileDrawable = LoadImageFromWebOperations(profile_url);
+        //Leave the fetching of profile picture to the adapter to do
+        this.url_contained = null;
     }
 
     public String getProfile_url() {
@@ -63,17 +77,5 @@ public class StatusItem {
 
     public void setCreated_at(Date created_at) {
         this.created_at = created_at;
-    }
-
-    public static Drawable LoadImageFromWebOperations(String url) {
-        try {
-            InputStream is = (InputStream) new URL(url).getContent();
-            Drawable d = Drawable.createFromStream(is, "src name");
-            Log.d("Converter: ", url + d.toString());
-            return d;
-        } catch (Exception e) {
-            Log.d("Exception: ", e.toString());
-            return null;
-        }
     }
 }

@@ -1,6 +1,9 @@
 package thack.ac.l_test;
 
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -81,7 +86,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         this.mItemClickListener = mItemClickListener;
     }
 
-    public void setmDataset(ArrayList<StatusItem> dataset){
-        mDataset = dataset;
-    }
+    //public void setmDataset(ArrayList<StatusItem> dataset){
+    //    mDataset = dataset;
+    //}
+
 }

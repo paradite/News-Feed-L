@@ -3,6 +3,7 @@ package thack.ac.l_test;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -21,14 +22,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.URLEntity;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -76,6 +81,9 @@ public class MainActivity extends Activity {
                 Intent intent = new Intent();
                 intent.putExtra("pos", position);
                 intent.putExtra("content", dataset.get(position).getContent());
+                if(dataset.get(position).getUrl_contained() != null && dataset.get(position).getUrl_contained().length > 0){
+                    intent.putExtra("url", dataset.get(position).getUrl_contained()[0].getText());
+                }
                 intent.setClass(self, DetailActivity.class);
                 startActivity(intent);
             }
@@ -150,9 +158,16 @@ public class MainActivity extends Activity {
                 User user = twitter.verifyCredentials();
                 List<twitter4j.Status> statuses = twitter.getHomeTimeline();
                 System.out.println("Showing @" + user.getScreenName() + "'s home timeline.");
-                for (twitter4j.Status status : statuses) {
-                    //Log.d(TAG, "@" + status.getUser().getScreenName() + " - " + status.getText() +"\n" + status.getUser().getProfileImageURL());
-                    dataset.add(new StatusItem(status.getUser().getScreenName(), status.getText(), status.getCreatedAt(), status.getUser().getMiniProfileImageURL()));
+                for (twitter4j.Status s : statuses) {
+                    Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
+                    StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL());
+                    URLEntity urls[] = s.getURLEntities();
+                    if(urls.length != 0){
+                        new_item.setUrl_contained(urls);
+                    }
+                    MediaEntity m[] = s.getMediaEntities();
+                    dataset.add(new_item);
+                    new DownloadImagesTask().execute(new_item);
                 }
             } catch (TwitterException te) {
                 te.printStackTrace();
@@ -168,9 +183,35 @@ public class MainActivity extends Activity {
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
-            mAdapter.setmDataset(dataset);
+            //mAdapter.setmDataset(dataset);
             mAdapter.notifyDataSetChanged();
         }
     }
 
+    public class DownloadImagesTask extends AsyncTask<StatusItem, Void, Void> {
+
+        @Override
+        protected Void doInBackground(StatusItem... statusItems) {
+            String url = statusItems[0].getProfile_url();
+            statusItems[0].setProfileDrawable(LoadImageFromWebOperations(url));
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public static Drawable LoadImageFromWebOperations(String url) {
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            Drawable d = Drawable.createFromStream(is, "src name");
+            Log.d("Converter: ", url + d.toString());
+            return d;
+        } catch (Exception e) {
+            Log.d("Exception: ", e.toString());
+            return null;
+        }
+    }
 }

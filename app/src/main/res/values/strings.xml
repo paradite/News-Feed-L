@@ -7,4 +7,6 @@
     <string name="action_refresh">Refresh</string>
     <string name="title_activity_detail">DetailActivity</string>
 
+    <!--Details-->
+    <string name="url_contained">Link in this tweet:</string>
 </resources>
