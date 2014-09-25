@@ -3,6 +3,8 @@ package thack.ac.l_test;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -15,14 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.widget.SearchView;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -32,7 +27,8 @@ import java.util.List;
 import java.util.Random;
 
 import twitter4j.MediaEntity;
-import twitter4j.Status;
+import twitter4j.Query;
+import twitter4j.QueryResult;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -48,10 +44,12 @@ public class MainActivity extends Activity {
     private RecyclerView.LayoutManager mLayoutManager;
     ArrayList<StatusItem> dataset;
     public final String TAG = ((Object) this).getClass().getSimpleName();
-
+    public String query;
     //Twitter related
     TwitterFactory tf;
     Twitter twitter;
+
+    public String DEFAULT_QUERY = "NUS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +70,11 @@ public class MainActivity extends Activity {
 
         // Create dataset
         dataset = new ArrayList<StatusItem>();
+
+        // Construct default query
+        if(query == null){
+            query = DEFAULT_QUERY;
+        }
 
         // specify an adapter (see also next example)
         mAdapter = new MyAdapter(dataset);
@@ -97,12 +100,12 @@ public class MainActivity extends Activity {
         // set item animator to DefaultAnimator
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        new fetchFromTwitter().execute();
-
+        //new fetchMyTimelineFromTwitter().execute();
+        handleIntent(getIntent());
     }
 
     public void reFetch(){
-        new fetchFromTwitter().execute();
+        new fetchSearchFromTwitter().execute(query);
     }
 
 
@@ -110,6 +113,14 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
         return true;
     }
 
@@ -122,7 +133,7 @@ public class MainActivity extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }else if(id == R.id.action_refresh){
-            new fetchFromTwitter().execute();
+            reFetch();
 
         }
         return super.onOptionsItemSelected(item);
@@ -147,7 +158,7 @@ public class MainActivity extends Activity {
     /**
      * Async Task to make http call and sync with server
      */
-    private class fetchFromTwitter extends AsyncTask<Void, Void, Void>{
+    private class fetchMyTimelineFromTwitter extends AsyncTask<Void, Void, Void>{
         private ProgressDialog dialog;
 
         @Override
@@ -167,6 +178,77 @@ public class MainActivity extends Activity {
                 //Reset the data set
                 dataset.clear();
                 Log.d(TAG, "Showing @" + user.getScreenName() + "'s home timeline.");
+                for (twitter4j.Status s : statuses) {
+                    //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
+                    StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL());
+                    URLEntity urls[] = s.getURLEntities();
+                    if(urls.length != 0){
+                        new_item.setUrl_contained(urls);
+                    }
+                    MediaEntity m[] = s.getMediaEntities();
+                    dataset.add(new_item);
+                    new DownloadImagesTask().execute(new_item);
+                }
+                //Sort by time
+                Collections.sort(dataset);
+            } catch (TwitterException te) {
+                te.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(self)
+                                .setMessage("Error occurred when getting the tweets")
+                                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        reFetch();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .setCancelable(true)
+                                .show();
+                    }
+                });
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            //mAdapter.setmDataset(dataset);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Async Task to make http call and sync with server
+     */
+    private class fetchSearchFromTwitter extends AsyncTask<String, Void, Void>{
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(self);
+            this.dialog.setMessage("Getting tweets...");
+            this.dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            try {
+                // gets Twitter instance with default credentials
+                User user = twitter.verifyCredentials();
+                Query query = new Query(strings[0]);
+                QueryResult result = twitter.search(query);
+                List<twitter4j.Status> statuses = result.getTweets();
+                //Reset the data set
+                dataset.clear();
+                Log.d(TAG, "Showing search results for " + strings[0] + ":");
                 for (twitter4j.Status s : statuses) {
                     //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
                     StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL());
@@ -239,4 +321,18 @@ public class MainActivity extends Activity {
             return null;
         }
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            query = intent.getStringExtra(SearchManager.QUERY);
+            new fetchSearchFromTwitter().execute(query);
+        }
+    }
+
 }
