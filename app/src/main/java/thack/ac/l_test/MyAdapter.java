@@ -29,18 +29,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public TextView mTextViewTitle;
         public TextView mTextViewContent;
         public ImageView imgViewIcon;
+        public ImageView imgViewRemoveIcon;
         public ViewHolder(View v) {
             super(v);
             mTextViewTitle = (TextView) v.findViewById(R.id.item_title);
             mTextViewContent = (TextView) v.findViewById(R.id.item_content);
             imgViewIcon = (ImageView) v.findViewById(R.id.item_icon);
+            imgViewRemoveIcon = (ImageView) v.findViewById(R.id.remove_icon);
+            imgViewRemoveIcon.setOnClickListener(this);
             v.setOnClickListener(this);
         }
 
+
         @Override
         public void onClick(View v) {
+            Log.d("View: ", v.toString());
             //Toast.makeText(v.getContext(), mTextViewTitle.getText() + " position = " + getPosition(), Toast.LENGTH_SHORT).show();
-            if (mItemClickListener != null) {
+            if(v.equals(imgViewRemoveIcon)){
+                removeAt(getPosition());
+            }else if (mItemClickListener != null) {
                 mItemClickListener.onItemClick(v, getPosition());
             }
         }
@@ -90,5 +97,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     //public void setmDataset(ArrayList<StatusItem> dataset){
     //    mDataset = dataset;
     //}
+
+    public void add(StatusItem item, int position) {
+        mDataset.add(position, item);
+        notifyItemInserted(position);
+    }
+
+    public void remove(StatusItem item) {
+        int position = mDataset.indexOf(item);
+        mDataset.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void removeAt(int position) {
+        mDataset.remove(position);
+        notifyItemRemoved(position);
+    }
 
 }

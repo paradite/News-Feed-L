@@ -11,8 +11,9 @@ What's in this project?
 ---
 ### RecyclerView
 + Basic layout with image and text for each item
-+ Dynamically update the data
++ Dynamically update the views with new data
 + Handle click events and start new activity
++ Remove item dynamically
 
 ### CardView
 + Used as container for each item in RecyclerView

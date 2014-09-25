@@ -30,6 +30,18 @@
                 android:contentDescription="icon"
                 android:src="@drawable/ic_launcher"
                 />
+            <ImageView
+                android:id="@+id/remove_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginLeft="@dimen/text_img_in_card_margin"
+                android:layout_marginRight="@dimen/text_img_in_card_margin"
+                android:layout_marginTop="@dimen/text_img_in_card_margin"
+                android:layout_marginBottom="1dp"
+                android:contentDescription="icon"
+                android:src="@drawable/ic_action_remove"
+                />
 
             <!-- title -->
             <TextView

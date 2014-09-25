@@ -1,5 +1,6 @@
 package thack.ac.l_test;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -25,6 +26,10 @@ public class DetailActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        ActionBar bar = getActionBar();
+        if(bar != null){
+            bar.setDisplayHomeAsUpEnabled(true);
+        }
         LinearLayout detailView = (LinearLayout) findViewById(R.id.detail_view);
 
         //Get the index from the previous activity
