@@ -1,13 +1,13 @@
-Twitter Project to test out new features in Android L
+Multi-source News Feed App to test out new features in Android L
 ===
 
-Why this project?
+Features:
 ---
-+ Try out the new features
-+ Set up templates
-+ Use them in my future projects
++ Search for news feeds across different sources using keyword
++ Sources supported: Twitter
++ Sources in development: Facebook, Google+, etc
 
-What's in this project?
+Techniques used:
 ---
 ### RecyclerView
 + Basic layout with image and text for each item
