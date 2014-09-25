@@ -43,7 +43,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         @Override
         public void onClick(View v) {
-            Log.d("View: ", v.toString());
+            //Log.d("View: ", v.toString());
             //Toast.makeText(v.getContext(), mTextViewTitle.getText() + " position = " + getPosition(), Toast.LENGTH_SHORT).show();
             if(v.equals(imgViewRemoveIcon)){
                 removeAt(getPosition());

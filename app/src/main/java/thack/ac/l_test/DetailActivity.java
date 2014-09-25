@@ -2,27 +2,20 @@ package thack.ac.l_test;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.res.Resources;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
-import android.text.util.Linkify;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 
 public class DetailActivity extends Activity {
-    LinearLayout.LayoutParams llp;
+    Activity self = this;
     public final String TAG = ((Object) this).getClass().getSimpleName();
 
     @Override
@@ -43,72 +36,17 @@ public class DetailActivity extends Activity {
         String url = getIntent().getExtras().getString("url");
         user = "@" + user;
 
-        //Define the Layout Params
-        llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        int margin = (int)getResources().getDimension(R.dimen.text_img_in_card_margin);
-        //Resources r = getResources();
-        //int margin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, r.getDisplayMetrics());
-        //Log.e(TAG, "margin: " + margin);
-        llp.setMargins(margin, margin, margin, margin); // llp.setMargins(left, top, right, bottom);
-
         //Set up the CardViews and add the CardViews to the content view
-        CardView userCard = setupCardView(new String[]{user});
+        CardView userCard = ViewHelper.setupCardView(this, new String[]{user});
         detailView.addView(userCard);
-        CardView contentCard = setupCardView(new String[]{content});
+        CardView contentCard = ViewHelper.setupCardView(this, new String[]{content});
         detailView.addView(contentCard);
-        CardView timeCard = setupCardView(new String[]{time});
+        CardView timeCard = ViewHelper.setupCardView(this, new String[]{time});
         detailView.addView(timeCard);
         if(url != null){
-            CardView urlCard = setupURLCardView(new String[]{url});
+            CardView urlCard = ViewHelper.setupURLCardView(this, new String[]{url});
             detailView.addView(urlCard);
         }
-    }
-
-    private CardView setupCardView(String[] s) {
-        //Construct the CardView
-        CardView cardView = new CardView(this);
-        //Add LinearLayout to CardView
-        LinearLayout ll = new LinearLayout(this);
-        ll.setOrientation(LinearLayout.VERTICAL);
-        cardView.addView(ll);
-
-        //Add Children views into the LinearLayout
-        for(String each_s : s){
-            TextView textView = new TextView(this);
-            textView.setLayoutParams(llp);
-            textView.setTextIsSelectable(true);
-            textView.setText(each_s);
-            ll.addView(textView);
-        }
-        return cardView;
-    }
-
-    private CardView setupURLCardView(String[] s) {
-        //Construct the CardView
-        CardView cardView = new CardView(this);
-        //Add LinearLayout to CardView
-        LinearLayout ll = new LinearLayout(this);
-        ll.setOrientation(LinearLayout.VERTICAL);
-        cardView.addView(ll);
-        //Add URL Title
-        String urlTitle = getString(R.string.url_contained_title);
-        TextView textViewTitle = new TextView(this);
-        textViewTitle.setLayoutParams(llp);
-        textViewTitle.setTextIsSelectable(true);
-        textViewTitle.setText(urlTitle);
-        ll.addView(textViewTitle);
-
-        //Add Children views into the LinearLayout
-        for(String each_s : s){
-            TextView textView = new TextView(this);
-            textView.setLayoutParams(llp);
-            //Allow links
-            textView.setAutoLinkMask(Linkify.ALL);
-            textView.setTextIsSelectable(true);
-            textView.setText(each_s);
-            ll.addView(textView);
-        }
-        return cardView;
     }
 
 
@@ -133,7 +71,31 @@ public class DetailActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_about) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(self);
+            alert.setTitle(getResources().getString(R.string.action_about));
+            String credit = getResources().getString(R.string.credit);
+            ViewHelper.setDialogViewMessage(self, alert, credit);
+            alert.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+            alert.setCancelable(true);
+            alert.show();
+            return true;
+        }else if(id == R.id.action_settings){
+            AlertDialog.Builder alert = new AlertDialog.Builder(self);
+            alert.setTitle(getResources().getString(R.string.action_settings));
+            String settings = getResources().getString(R.string.action_settings);
+            ViewHelper.setDialogViewMessage(self, alert, settings);
+            alert.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+            alert.setCancelable(true);
+            alert.show();
             return true;
         }
         return super.onOptionsItemSelected(item);

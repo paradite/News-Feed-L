@@ -10,14 +10,18 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -40,6 +44,9 @@ import twitter4j.conf.ConfigurationBuilder;
 public class MainActivity extends Activity {
     private Activity self = this;
     private RecyclerView mRecyclerView;
+    private CardView mCardView;
+    private ImageView removeIconView;
+    private TextView titleView;
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     ArrayList<StatusItem> dataset;
@@ -49,12 +56,24 @@ public class MainActivity extends Activity {
     TwitterFactory tf;
     Twitter twitter;
 
-    public String DEFAULT_QUERY = "NUS";
+    public String DEFAULT_QUERY = "#Android";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Set up introduction card
+        mCardView = (CardView)findViewById(R.id.card_view);
+        removeIconView = (ImageView) mCardView.findViewById(R.id.remove_icon);
+        titleView = (TextView) mCardView.findViewById(R.id.item_title);
+        removeIconView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCardView.setVisibility(View.GONE);
+            }
+        });
+
         //Set up twitter4j
         setUpTwitter4j();
 
@@ -104,8 +123,12 @@ public class MainActivity extends Activity {
         handleIntent(getIntent());
     }
 
-    public void reFetch(){
+    public void newFetch(){
         new fetchSearchFromTwitter().execute(query);
+        mCardView.setVisibility(View.VISIBLE);
+        if(titleView != null){
+            titleView.setText("Search result for " + query + ":");
+        }
     }
 
 
@@ -130,10 +153,34 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_about) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(self);
+            alert.setTitle(getResources().getString(R.string.action_about));
+            String credit = getResources().getString(R.string.credit);
+            ViewHelper.setDialogViewMessage(self, alert, credit);
+            alert.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+            alert.setCancelable(true);
+            alert.show();
+            return true;
+        }else if(id == R.id.action_settings){
+            AlertDialog.Builder alert = new AlertDialog.Builder(self);
+            alert.setTitle(getResources().getString(R.string.action_settings));
+            String settings = getResources().getString(R.string.settings);
+            ViewHelper.setDialogViewMessage(self, alert, settings);
+            alert.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+            alert.setCancelable(true);
+            alert.show();
             return true;
         }else if(id == R.id.action_refresh){
-            reFetch();
+            newFetch();
 
         }
         return super.onOptionsItemSelected(item);
@@ -201,7 +248,7 @@ public class MainActivity extends Activity {
                                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        reFetch();
+                                        newFetch();
                                     }
                                 })
                                 .setNegativeButton("Cancel", null)
@@ -272,7 +319,7 @@ public class MainActivity extends Activity {
                                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        reFetch();
+                                        newFetch();
                                     }
                                 })
                                 .setNegativeButton("Cancel", null)
@@ -331,7 +378,7 @@ public class MainActivity extends Activity {
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
-            new fetchSearchFromTwitter().execute(query);
+            newFetch();
         }
     }
 
