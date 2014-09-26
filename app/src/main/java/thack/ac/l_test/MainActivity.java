@@ -293,9 +293,12 @@ public class MainActivity extends Activity {
                 Query query = new Query(strings[0]);
                 QueryResult result = twitter.search(query);
                 List<twitter4j.Status> statuses = result.getTweets();
+                //Update the queried term in adapter
+                MyAdapter.setQueriedTerm(strings[0]);
                 //Reset the data set
                 dataset.clear();
                 Log.d(TAG, "Showing search results for " + strings[0] + ":");
+                //Add in new data to the data set
                 for (twitter4j.Status s : statuses) {
                     //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
                     StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL());
@@ -307,6 +310,7 @@ public class MainActivity extends Activity {
                     dataset.add(new_item);
                     new DownloadImagesTask().execute(new_item);
                 }
+
                 //Sort by time
                 Collections.sort(dataset);
             } catch (TwitterException te) {
@@ -338,6 +342,8 @@ public class MainActivity extends Activity {
                 dialog.dismiss();
             }
             //mAdapter.setmDataset(dataset);
+
+            //Notify the adapter
             mAdapter.notifyDataSetChanged();
         }
     }

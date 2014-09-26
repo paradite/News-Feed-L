@@ -1,8 +1,14 @@
 package thack.ac.l_test;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +20,8 @@ import android.widget.Toast;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by paradite on 21/9/14.
@@ -22,18 +30,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private ArrayList<StatusItem> mDataset;
     OnItemClickListener mItemClickListener;
 
+    //The term being queried, for highlighting purposes
+    private static String queried_term;
+
+    public static void setQueriedTerm(String queried_term) {
+        MyAdapter.queried_term = queried_term;
+    }
 
     // Provide a reference to the type of views that you are using
     // (custom viewholder)
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView mTextViewTitle;
         public TextView mTextViewContent;
+        public TextView mTextViewTime;
         public ImageView imgViewIcon;
         public ImageView imgViewRemoveIcon;
         public ViewHolder(View v) {
             super(v);
             mTextViewTitle = (TextView) v.findViewById(R.id.item_title);
             mTextViewContent = (TextView) v.findViewById(R.id.item_content);
+            mTextViewTime = (TextView) v.findViewById(R.id.item_time);
             imgViewIcon = (ImageView) v.findViewById(R.id.item_icon);
             imgViewRemoveIcon = (ImageView) v.findViewById(R.id.remove_icon);
             imgViewRemoveIcon.setOnClickListener(this);
@@ -78,8 +94,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - replace the contents of the view with that element
         holder.mTextViewTitle.setText("@" + item.getUser());
         //Add content and timing to the textview
-        String content_with_timing = item.getContent() + "\n" + item.getDisplayTime();
-        holder.mTextViewContent.setText(content_with_timing);
+        String content = item.getContent();
+        CharSequence timing = item.getDisplayTime();
+        if(queried_term != null){
+            //Apply different styles to the term queried term
+            final Pattern p = Pattern.compile(queried_term, Pattern.CASE_INSENSITIVE);
+            final Matcher matcher = p.matcher(content);
+
+            final SpannableStringBuilder spannable_content = new SpannableStringBuilder(content);
+            final StyleSpan span = new StyleSpan(Typeface.BOLD);
+            while (matcher.find()) {
+                spannable_content.setSpan(
+                        span, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+            }
+            holder.mTextViewContent.setText(spannable_content);
+        }else {
+            holder.mTextViewContent.setText(content);
+        }
+
+        holder.mTextViewTime.setText(timing);
         //Set the img
         holder.imgViewIcon.setImageDrawable(item.getProfileDrawable());
     }

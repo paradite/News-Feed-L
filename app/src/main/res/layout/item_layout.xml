@@ -62,8 +62,17 @@
                 android:layout_below="@id/item_icon"
                 android:layout_marginLeft="@dimen/text_img_in_card_margin"
                 android:layout_marginRight="@dimen/text_img_in_card_margin"
-                android:layout_marginBottom="@dimen/text_img_in_card_margin"
                 android:textSize="16sp" />
+            <!-- Time -->
+            <TextView
+                android:id="@+id/item_time"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/item_content"
+                android:layout_marginLeft="@dimen/text_img_in_card_margin"
+                android:layout_marginRight="@dimen/text_img_in_card_margin"
+                android:layout_marginBottom="@dimen/text_img_in_card_margin"
+                android:textSize="14sp" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
