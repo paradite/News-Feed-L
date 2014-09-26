@@ -25,5 +25,8 @@ dependencies {
     compile 'com.android.support:cardview-v7:+'
     compile 'com.loopj.android:android-async-http:1.4.5'
     compile 'org.twitter4j:twitter4j-core:4.0.2'
+    compile 'com.google.api-client:google-api-client:1.18.0-rc'
+    compile 'com.google.api-client:google-api-client-jackson2:1.18.0-rc'
+    compile 'com.google.apis:google-api-services-plus:v1-rev170-1.19.0'
 
 }

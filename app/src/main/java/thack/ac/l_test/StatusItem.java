@@ -24,6 +24,11 @@ public class StatusItem implements Comparable<StatusItem>{
     private String profile_url;
     private Drawable profileDrawable;
     private URLEntity[] url_contained;
+    private String source;
+
+    public String getSource() {
+        return source;
+    }
 
     public URLEntity[] getUrl_contained() {
         return url_contained;
@@ -33,7 +38,7 @@ public class StatusItem implements Comparable<StatusItem>{
         this.url_contained = url_contained;
     }
 
-    public StatusItem(String user, String content, Date created_at, String profile_url) {
+    public StatusItem(String user, String content, Date created_at, String profile_url, String source) {
         this.user = user;
         this.content = content;
         this.created_at = created_at;
@@ -41,6 +46,7 @@ public class StatusItem implements Comparable<StatusItem>{
         //this.profileDrawable = LoadImageFromWebOperations(profile_url);
         //Leave the fetching of profile picture to the adapter to do
         this.url_contained = null;
+        this.source = source;
     }
 
     public String getProfile_url() {

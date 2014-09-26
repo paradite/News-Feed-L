@@ -92,13 +92,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - get element from your dataset at this position
         StatusItem item = mDataset.get(position);
         // - replace the contents of the view with that element
-        holder.mTextViewTitle.setText("@" + item.getUser());
+
+        //Differentiate different sources
+
+        holder.mTextViewTitle.setText(item.getSource() + item.getUser());
         //Add content and timing to the textview
         String content = item.getContent();
         CharSequence timing = item.getDisplayTime();
         if(queried_term != null){
+            //Format the queried term
+            String clean_query = queried_term.replaceAll("[^\\w\\s]","");
             //Apply different styles to the term queried term
-            final Pattern p = Pattern.compile(queried_term, Pattern.CASE_INSENSITIVE);
+            final Pattern p = Pattern.compile(clean_query, Pattern.CASE_INSENSITIVE);
             final Matcher matcher = p.matcher(content);
 
             final SpannableStringBuilder spannable_content = new SpannableStringBuilder(content);

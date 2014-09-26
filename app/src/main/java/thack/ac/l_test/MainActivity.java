@@ -23,12 +23,17 @@ import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.TimeZone;
 
 import twitter4j.MediaEntity;
 import twitter4j.Query;
@@ -56,7 +61,10 @@ public class MainActivity extends Activity {
     TwitterFactory tf;
     Twitter twitter;
 
-    public String DEFAULT_QUERY = "#Android";
+    public String DEFAULT_QUERY = "Google Glass";
+    public String SOURCE_PLUS = "+";
+    public String SOURCE_TWITTER = "@";
+    private static final int MAX_RESULTS_TWITTER = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +132,16 @@ public class MainActivity extends Activity {
     }
 
     public void newFetch(){
+        //Update the queried term in adapter
+        MyAdapter.setQueriedTerm(query);
+
+        //Reset the data set
+        dataset.clear();
+
+        //Start fetching from sources
         new fetchSearchFromTwitter().execute(query);
+        String clean_query = query.replaceAll("[^\\w\\s]","");
+        new fetchSearchFromGooglePlus().execute(clean_query);
         mCardView.setVisibility(View.VISIBLE);
         if(titleView != null){
             titleView.setText("Search result for " + query + ":");
@@ -222,12 +239,11 @@ public class MainActivity extends Activity {
                 // gets Twitter instance with default credentials
                 User user = twitter.verifyCredentials();
                 List<twitter4j.Status> statuses = twitter.getHomeTimeline();
-                //Reset the data set
-                dataset.clear();
+
                 Log.d(TAG, "Showing @" + user.getScreenName() + "'s home timeline.");
                 for (twitter4j.Status s : statuses) {
                     //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
-                    StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL());
+                    StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL(), SOURCE_TWITTER);
                     URLEntity urls[] = s.getURLEntities();
                     if(urls.length != 0){
                         new_item.setUrl_contained(urls);
@@ -291,17 +307,15 @@ public class MainActivity extends Activity {
                 // gets Twitter instance with default credentials
                 User user = twitter.verifyCredentials();
                 Query query = new Query(strings[0]);
+                query.setCount(MAX_RESULTS_TWITTER);
                 QueryResult result = twitter.search(query);
                 List<twitter4j.Status> statuses = result.getTweets();
-                //Update the queried term in adapter
-                MyAdapter.setQueriedTerm(strings[0]);
-                //Reset the data set
-                dataset.clear();
+
                 Log.d(TAG, "Showing search results for " + strings[0] + ":");
                 //Add in new data to the data set
                 for (twitter4j.Status s : statuses) {
                     //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
-                    StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL());
+                    StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL(), SOURCE_TWITTER);
                     URLEntity urls[] = s.getURLEntities();
                     if(urls.length != 0){
                         new_item.setUrl_contained(urls);
@@ -331,6 +345,83 @@ public class MainActivity extends Activity {
                                 .show();
                     }
                 });
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            //mAdapter.setmDataset(dataset);
+
+            //Notify the adapter
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Async Task to make http call and sync with server
+     */
+    private class fetchSearchFromGooglePlus extends AsyncTask<String, Void, Void>{
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(self);
+            this.dialog.setMessage("Getting Google+ posts...");
+            this.dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            try {
+                //Get response from Google+
+                List<com.google.api.services.plus.model.Activity> activities = GooglePlus.run(strings[0]);
+
+                Log.d(TAG, "Showing search results for " + strings[0] + ":");
+                //Add in new data to the data set
+                for (com.google.api.services.plus.model.Activity a : activities) {
+                    Log.d(TAG, "@" + a.getActor().getDisplayName());
+                    Log.d(TAG, "" + a.getPublished().getTimeZoneShift());
+                    Date parsed_date = parseRFC3339Date(a.getPublished().toStringRfc3339());
+                    Log.d(TAG, "\n" + parsed_date.toString());
+
+                    StatusItem new_item = new StatusItem(a.getActor().getDisplayName(), a.getObject().getContent(), parsed_date, null, SOURCE_PLUS);
+                    //URLEntity urls[] = a.getURLEntities();
+                    //if(urls.length != 0){
+                    //    new_item.setUrl_contained(urls);
+                    //}
+                    //MediaEntity m[] = a.getMediaEntities();
+                    dataset.add(new_item);
+                    new DownloadImagesTask().execute(new_item);
+                }
+
+                //Sort by time
+                Collections.sort(dataset);
+            } catch (IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(self)
+                                .setMessage("Error occurred when getting the Google+ posts")
+                                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        newFetch();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .setCancelable(true)
+                                .show();
+                    }
+                });
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -387,5 +478,46 @@ public class MainActivity extends Activity {
             newFetch();
         }
     }
+
+    public static java.util.Date parseRFC3339Date(String datestring) throws java.text.ParseException, IndexOutOfBoundsException{
+        Date d = new Date();
+
+        //if there is no time zone, we don't need to do any special parsing.
+        if(datestring.endsWith("Z")){
+            try{
+                SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");//spec for RFC3339
+                s.setTimeZone(TimeZone.getTimeZone("UTC"));
+                d = s.parse(datestring);
+            }
+            catch(java.text.ParseException pe){//try again with optional decimals
+                SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");//spec for RFC3339 (with fractional seconds)
+                s.setTimeZone(TimeZone.getTimeZone("UTC"));
+                s.setLenient(true);
+                d = s.parse(datestring);
+            }
+            return d;
+        }
+
+        //step one, split off the timezone.
+        String firstpart = datestring.substring(0,datestring.lastIndexOf('-'));
+        String secondpart = datestring.substring(datestring.lastIndexOf('-'));
+
+        //step two, remove the colon from the timezone offset
+        secondpart = secondpart.substring(0,secondpart.indexOf(':')) + secondpart.substring(secondpart.indexOf(':')+1);
+        datestring  = firstpart + secondpart;
+        SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");//spec for RFC3339
+        s.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try{
+            d = s.parse(datestring);
+        }
+        catch(java.text.ParseException pe){//try again with optional decimals
+            s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");//spec for RFC3339 (with fractional seconds)
+            s.setTimeZone(TimeZone.getTimeZone("UTC"));
+            s.setLenient(true);
+            d = s.parse(datestring);
+        }
+        return d;
+    }
+
 
 }
