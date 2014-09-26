@@ -1,11 +1,11 @@
-Multi-source News Feed App to test out new features in Android L
+Social media search App to test out new features in Android L
 ===
 
 Features:
 ---
-+ Search for news feeds across different sources using keyword
-+ Sources supported: Twitter, Google+
-+ Sources in development: Facebook, etc
++ Perform keyword search on social media sites without logging in
++ Social media supported: Twitter, Google+
++ Social media not yet supported: Facebook, etc
 
 Techniques used:
 ---
