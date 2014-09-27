@@ -140,11 +140,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         //Set the img
         holder.imgViewIcon.setImageDrawable(item.getProfileDrawable());
         //Set content image (for Instagram)
-        //holder.mImageViewContentPic.setImageDrawable(item.getContentDrawable());
+        holder.mImageViewContentPic.setImageDrawable(item.getContentDrawable());
+
+        holder.mImageViewContentPic.setVisibility(View.VISIBLE);
+        if(item.getContentDrawable() == null){
+            holder.mImageViewContentPic.setVisibility(View.GONE);
+        }
         //if(item.getContentDrawable() == null){
         //    holder.mImageViewContentPic.setVisibility(View.INVISIBLE);
         //}
     }
+
+
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
