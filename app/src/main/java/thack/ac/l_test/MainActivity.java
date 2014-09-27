@@ -63,6 +63,7 @@ public class MainActivity extends Activity {
     public String DEFAULT_QUERY = "Google Glass";
     public static String SOURCE_PLUS = "+";
     public static String SOURCE_TWITTER = "@";
+    public static String SOURCE_INSTA = "#";
     private static final int MAX_RESULTS_TWITTER = 10;
 
     @Override
@@ -144,9 +145,9 @@ public class MainActivity extends Activity {
         dataset.clear();
 
         //Start fetching from sources
+        //Execute twitter first, start others at the end of twitter
         new fetchSearchFromTwitter().execute(query);
-        String clean_query = query.replaceAll("[^\\w\\s]","");
-        new fetchSearchFromGooglePlus().execute(clean_query);
+
         mCardView.setVisibility(View.VISIBLE);
         if(titleView != null){
             titleView.setText("Search result for " + query + ":");
@@ -225,75 +226,9 @@ public class MainActivity extends Activity {
     }
 
     /**
+     * Twitter Async Task
      * Async Task to make http call and sync with server
-     */
-    private class fetchMyTimelineFromTwitter extends AsyncTask<Void, Void, Void>{
-        private ProgressDialog dialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            dialog = new ProgressDialog(self);
-            this.dialog.setMessage("Getting tweets...");
-            this.dialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                // gets Twitter instance with default credentials
-                User user = twitter.verifyCredentials();
-                List<twitter4j.Status> statuses = twitter.getHomeTimeline();
-
-                Log.d(TAG, "Showing @" + user.getScreenName() + "'s home timeline.");
-                for (twitter4j.Status s : statuses) {
-                    //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
-                    StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL(), SOURCE_TWITTER);
-                    URLEntity urls[] = s.getURLEntities();
-                    if(urls.length != 0){
-                        new_item.setUrl_contained_twitter(urls);
-                    }
-                    MediaEntity m[] = s.getMediaEntities();
-                    dataset.add(new_item);
-                    new DownloadImagesTask().execute(new_item);
-                }
-                //Sort by time
-                Collections.sort(dataset);
-            } catch (TwitterException te) {
-                te.printStackTrace();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new AlertDialog.Builder(self)
-                                .setMessage("Error occurred when getting the tweets")
-                                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        newFetch();
-                                    }
-                                })
-                                .setNegativeButton("Cancel", null)
-                                .setCancelable(true)
-                                .show();
-                    }
-                });
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            //mAdapter.setmDataset(dataset);
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * Async Task to make http call and sync with server
+     * Twitter Async Task
      */
     private class fetchSearchFromTwitter extends AsyncTask<String, Void, Void>{
         private ProgressDialog dialog;
@@ -316,7 +251,7 @@ public class MainActivity extends Activity {
                 QueryResult result = twitter.search(query);
                 List<twitter4j.Status> statuses = result.getTweets();
 
-                Log.d(TAG, "Showing search results for " + strings[0] + ":");
+                //Log.d(TAG, "Showing search results for " + strings[0] + ":");
                 //Add in new data to the data set
                 for (twitter4j.Status s : statuses) {
                     //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
@@ -327,7 +262,7 @@ public class MainActivity extends Activity {
                     }
                     MediaEntity m[] = s.getMediaEntities();
                     dataset.add(new_item);
-                    new DownloadImagesTask().execute(new_item);
+                    //new DownloadImagesTask().execute(new_item);
                 }
 
                 //Sort by time
@@ -362,13 +297,20 @@ public class MainActivity extends Activity {
             }
             //mAdapter.setmDataset(dataset);
 
+            //Execute Google+
+            //Parse query for Google+
+            String clean_query = query.replaceAll("[^\\w\\s]","");
+            new fetchSearchFromGooglePlus().execute(clean_query);
+
             //Notify the adapter
             mAdapter.notifyDataSetChanged();
         }
     }
 
     /**
+     * Google+ Async Task
      * Async Task to make http call and sync with server
+     * Google+ Async Task
      */
     private class fetchSearchFromGooglePlus extends AsyncTask<String, Void, Void>{
         private ProgressDialog dialog;
@@ -387,13 +329,13 @@ public class MainActivity extends Activity {
                 //Get response from Google+
                 List<com.google.api.services.plus.model.Activity> activities = GooglePlus.run(strings[0]);
 
-                Log.d(TAG, "Showing search results for " + strings[0] + ":");
+                //Log.d(TAG, "Showing search results for " + strings[0] + ":");
                 //Add in new data to the data set
                 for (com.google.api.services.plus.model.Activity a : activities) {
-                    Log.d(TAG, "@" + a.getActor().getDisplayName());
-                    Log.d(TAG, "" + a.getPublished().getTimeZoneShift());
+                    //Log.d(TAG, "@" + a.getActor().getDisplayName());
+                    //Log.d(TAG, "" + a.getPublished().getTimeZoneShift());
                     Date parsed_date = parseRFC3339Date(a.getPublished().toStringRfc3339());
-                    Log.d(TAG, "\n" + parsed_date.toString());
+                    //Log.d(TAG, "\n" + parsed_date.toString());
 
                     StatusItem new_item = new StatusItem(a.getActor().getDisplayName(), a.getObject().getContent(), parsed_date, a.getActor().getImage().getUrl(), SOURCE_PLUS);
                     String urls[] = {a.getUrl()};
@@ -402,7 +344,7 @@ public class MainActivity extends Activity {
                     }
                     //MediaEntity m[] = a.getMediaEntities();
                     dataset.add(new_item);
-                    new DownloadImagesTask().execute(new_item);
+                    //new DownloadImagesTask().execute(new_item);
                 }
 
                 //Sort by time
@@ -439,8 +381,93 @@ public class MainActivity extends Activity {
             }
             //mAdapter.setmDataset(dataset);
 
+            //Parse query more for Instagram (remove spaces)
+            String cleaner_query = query.replaceAll("[^\\w\\s]","").replace(" ", "");
+            new fetchSearchFromInstagram().execute(cleaner_query);
+
             //Notify the adapter
             mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Instagram Async Task
+     * Async Task to make http call and sync with server
+     * Instagram Async Task
+     */
+    private class fetchSearchFromInstagram extends AsyncTask<String, Void, Void>{
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(self);
+            this.dialog.setMessage("Getting Instagram posts...");
+            this.dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            //Get response from Instagram
+            ArrayList<StatusItem> items = InstagramIntegration.run(strings[0]);
+            if(items == null) return null;
+            Log.d(TAG, "Showing Instagram search results for " + strings[0] + ":");
+            //Add in new data to the data set
+            for (StatusItem item : items) {
+                Log.d(TAG, "@" + item.getUser());
+                Log.d(TAG, "\n" + item.getDisplayTime());
+
+                //String urls[] = {item.getUrl()};
+                //if(urls.length != 0){
+                //    new_item.setUrl_contained_plus(urls);
+                //}
+                //MediaEntity m[] = a.getMediaEntities();
+                dataset.add(item);
+                // new DownloadImagesTask().execute(item);
+            }
+
+            //Sort by time
+            Collections.sort(dataset);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            //mAdapter.setmDataset(dataset);
+            //Finished all text, then do image fetching
+            new DownloadAllImagesTask().execute(dataset);
+            //Notify the adapter
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public class DownloadAllImagesTask extends AsyncTask<ArrayList<StatusItem>, Void, Void> {
+        @Override
+        protected Void doInBackground(ArrayList<StatusItem>... arrayLists) {
+            for (StatusItem statusItem : arrayLists[0]){
+                String profile_url = statusItem.getProfile_url();
+                String pic_url = statusItem.getContent_pic_url();
+                statusItem.setProfileDrawable(LoadImageFromWebOperations(profile_url));
+                if(pic_url != null){
+                    Log.e(TAG, statusItem.getSource() + statusItem.getUser() + ": " + pic_url);
+                    statusItem.setContentDrawable(LoadImageFromWebOperations(pic_url));
+                }
+                runOnUiThread(new Runnable() {
+                    public void run(){
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+
         }
     }
 
@@ -448,8 +475,13 @@ public class MainActivity extends Activity {
 
         @Override
         protected Void doInBackground(StatusItem... statusItems) {
-            String url = statusItems[0].getProfile_url();
-            statusItems[0].setProfileDrawable(LoadImageFromWebOperations(url));
+            String profile_url = statusItems[0].getProfile_url();
+            String pic_url = statusItems[0].getContent_pic_url();
+            statusItems[0].setProfileDrawable(LoadImageFromWebOperations(profile_url));
+            if(pic_url != null){
+                Log.e(TAG, statusItems[0].getSource() + statusItems[0].getUser() + ": " + pic_url);
+                statusItems[0].setContentDrawable(LoadImageFromWebOperations(pic_url));
+            }
             return null;
         }
 
@@ -526,5 +558,72 @@ public class MainActivity extends Activity {
         return d;
     }
 
+    ///**
+    // * Async Task to make http call and sync with server
+    // */
+    //private class fetchMyTimelineFromTwitter extends AsyncTask<Void, Void, Void>{
+    //    private ProgressDialog dialog;
+    //
+    //    @Override
+    //    protected void onPreExecute() {
+    //        super.onPreExecute();
+    //        dialog = new ProgressDialog(self);
+    //        this.dialog.setMessage("Getting tweets...");
+    //        this.dialog.show();
+    //    }
+    //
+    //    @Override
+    //    protected Void doInBackground(Void... voids) {
+    //        try {
+    //            // gets Twitter instance with default credentials
+    //            User user = twitter.verifyCredentials();
+    //            List<twitter4j.Status> statuses = twitter.getHomeTimeline();
+    //
+    //            //Log.d(TAG, "Showing @" + user.getScreenName() + "'s home timeline.");
+    //            for (twitter4j.Status s : statuses) {
+    //                //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
+    //                StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL(), SOURCE_TWITTER);
+    //                URLEntity urls[] = s.getURLEntities();
+    //                if(urls.length != 0){
+    //                    new_item.setUrl_contained_twitter(urls);
+    //                }
+    //                MediaEntity m[] = s.getMediaEntities();
+    //                dataset.add(new_item);
+    //                new DownloadImagesTask().execute(new_item);
+    //            }
+    //            //Sort by time
+    //            Collections.sort(dataset);
+    //        } catch (TwitterException te) {
+    //            te.printStackTrace();
+    //            runOnUiThread(new Runnable() {
+    //                @Override
+    //                public void run() {
+    //                    new AlertDialog.Builder(self)
+    //                            .setMessage("Error occurred when getting the tweets")
+    //                            .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+    //                                @Override
+    //                                public void onClick(DialogInterface dialogInterface, int i) {
+    //                                    newFetch();
+    //                                }
+    //                            })
+    //                            .setNegativeButton("Cancel", null)
+    //                            .setCancelable(true)
+    //                            .show();
+    //                }
+    //            });
+    //        }
+    //        return null;
+    //    }
+    //
+    //    @Override
+    //    protected void onPostExecute(Void aVoid) {
+    //        super.onPostExecute(aVoid);
+    //        if (dialog.isShowing()) {
+    //            dialog.dismiss();
+    //        }
+    //        //mAdapter.setmDataset(dataset);
+    //        mAdapter.notifyDataSetChanged();
+    //    }
+    //}
 
 }

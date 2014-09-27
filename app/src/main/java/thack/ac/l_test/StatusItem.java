@@ -15,11 +15,31 @@ import twitter4j.URLEntity;
 public class StatusItem implements Comparable<StatusItem>{
     private String user;
     private String content;
+    private String content_pic_url;
+
+
     private Date created_at;
     private String profile_url;
     private Drawable profileDrawable;
+    private Drawable contentDrawable;
+
+
     private URLEntity[] url_contained_twitter;
 
+    public Drawable getContentDrawable() {
+        return contentDrawable;
+    }
+
+    public void setContentDrawable(Drawable contentDrawable) {
+        this.contentDrawable = contentDrawable;
+    }
+    public String getContent_pic_url() {
+        return content_pic_url;
+    }
+
+    public void setContent_pic_url(String content_pic_url) {
+        this.content_pic_url = content_pic_url;
+    }
     public String[] getUrl_contained_plus() {
         return url_contained_plus;
     }
@@ -52,6 +72,7 @@ public class StatusItem implements Comparable<StatusItem>{
         //Leave the fetching of profile picture to the adapter to do
         this.url_contained_twitter = null;
         this.source = source;
+        this.content_pic_url = null;
     }
 
     public String getProfile_url() {

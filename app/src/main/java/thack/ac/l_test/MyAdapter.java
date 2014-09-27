@@ -43,6 +43,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView mTextViewTitle;
         public TextView mTextViewContent;
+        public ImageView mImageViewContentPic;
         public TextView mTextViewTime;
         public ImageView imgViewIcon;
         public ImageView imgViewRemoveIcon;
@@ -50,6 +51,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             super(v);
             mTextViewTitle = (TextView) v.findViewById(R.id.item_title);
             mTextViewContent = (TextView) v.findViewById(R.id.item_content);
+            mImageViewContentPic = (ImageView) v.findViewById(R.id.item_content_pic);
             mTextViewTime = (TextView) v.findViewById(R.id.item_time);
             imgViewIcon = (ImageView) v.findViewById(R.id.item_icon);
             imgViewRemoveIcon = (ImageView) v.findViewById(R.id.remove_icon);
@@ -97,8 +99,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - replace the contents of the view with that element
 
         //Differentiate different sources
-
+        //Reference: http://colour.charlottedann.com/
         holder.mTextViewTitle.setText(item.getSource() + item.getUser());
+        //Apply colors for different sources
+        if(item.getSource().equals(MainActivity.SOURCE_TWITTER)){
+            holder.mTextViewTitle.setTextColor(Color.rgb(0,132,180));
+        }
+        else if(item.getSource().equals(MainActivity.SOURCE_PLUS)){
+            holder.mTextViewTitle.setTextColor(Color.rgb(222,76,58));
+        }
+        else if(item.getSource().equals(MainActivity.SOURCE_INSTA)){
+            holder.mTextViewTitle.setTextColor(Color.rgb(102,80,67));
+        }
+
         //Add content and timing to the textview
         String content = item.getContent();
         //Parse the html elements
@@ -126,6 +139,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.mTextViewTime.setText(timing);
         //Set the img
         holder.imgViewIcon.setImageDrawable(item.getProfileDrawable());
+        //Set content image (for Instagram)
+        //holder.mImageViewContentPic.setImageDrawable(item.getContentDrawable());
+        //if(item.getContentDrawable() == null){
+        //    holder.mImageViewContentPic.setVisibility(View.INVISIBLE);
+        //}
     }
 
     // Return the size of your dataset (invoked by the layout manager)

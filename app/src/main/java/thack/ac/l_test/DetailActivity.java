@@ -41,6 +41,9 @@ public class DetailActivity extends Activity {
         if(source.equals(MainActivity.SOURCE_PLUS)){
             source = getResources().getString(R.string.source_plus);
         }
+        if(source.equals(MainActivity.SOURCE_INSTA)){
+            source = getResources().getString(R.string.source_insta);
+        }
 
         String content = getIntent().getExtras().getString("content");
         //Parse the html elements

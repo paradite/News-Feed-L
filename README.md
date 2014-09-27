@@ -1,10 +1,15 @@
-Social media search App to test out new features in Android L
+App to search for keywords across different social media sites
 ===
+
+Possible Names:
+---
++ No Login (as the app only uses publicly accessible feeds)
++ Social Monitor (the app monitors social media based on keywords)
 
 Features:
 ---
 + Perform keyword search on social media sites without logging in
-+ Social media supported: Twitter, Google+
++ Social media supported: Twitter, Google+, Instagram
 + Social media not yet supported: Facebook, etc
 
 Techniques used:
@@ -25,3 +30,6 @@ Techniques used:
 
 ### Google+ Integration
 + Google+ API(through Google HTTP Client Library for Java) to fetch public posts on Google+
+
+### Instagram Integration
++ Instagram API to fetch photos using queried terms on Instagram

@@ -16,6 +16,7 @@
     <string name="url_contained_title">Related URL links:</string>
     <string name="source_twitter">From twitter</string>
     <string name="source_plus">From Google+</string>
+    <string name="source_insta">From Instagram</string>
 
     <!--Search-->
     <string name="search_title">Search</string>
