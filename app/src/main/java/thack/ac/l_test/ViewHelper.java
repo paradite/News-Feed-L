@@ -16,7 +16,10 @@ import android.widget.TextView;
  * Created by paradite on 17/8/14.
  */
 public class ViewHelper {
+    //Normal LayoutParams
     public static LinearLayout.LayoutParams llp;
+    //Title LayoutParams used with other TextViews
+    public static LinearLayout.LayoutParams llp_title;
     public final String TAG = ((Object) this).getClass().getSimpleName();
     /**
      * Method to get a EditText with hint
@@ -115,7 +118,7 @@ public class ViewHelper {
     public static CardView setupCardView(Context c, String[] s) {
 
         //Set up the Layout Params
-        setupCardViewLayoutParams(c);
+        setupCardViewLayoutParams(c, 1);
 
         //Construct the CardView
         CardView cardView = new CardView(c);
@@ -135,19 +138,27 @@ public class ViewHelper {
         return cardView;
     }
 
-    private static void setupCardViewLayoutParams(Context c) {
+    private static void setupCardViewLayoutParams(Context c, int noOfTextViews) {
         llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        llp_title = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         int margin = (int)c.getResources().getDimension(R.dimen.text_img_in_card_margin);
         //Resources r = getResources();
         //int margin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, r.getDisplayMetrics());
         //Log.e(TAG, "margin: " + margin);
-        ViewHelper.llp.setMargins(margin, margin, margin, margin); // llp.setMargins(left, top, right, bottom);
+
+        //Set different LayoutParams for different number of TextViews
+        if(noOfTextViews == 1){
+            ViewHelper.llp.setMargins(margin, margin, margin, margin); // llp.setMargins(left, top, right, bottom);
+        }else{
+            ViewHelper.llp.setMargins(margin, 0, margin, margin); // llp.setMargins(left, top, right, bottom);
+        }
+        ViewHelper.llp_title.setMargins(margin, margin, margin, 0); // llp.setMargins(left, top, right, bottom);
     }
 
     public static CardView setupURLCardView(Context c, String[] s) {
 
         //Set up the Layout Params
-        setupCardViewLayoutParams(c);
+        setupCardViewLayoutParams(c, 2);
 
         //Construct the CardView
         CardView cardView = new CardView(c);
@@ -158,7 +169,7 @@ public class ViewHelper {
         //Add URL Title
         String urlTitle = c.getString(R.string.url_contained_title);
         TextView textViewTitle = new TextView(c);
-        textViewTitle.setLayoutParams(llp);
+        textViewTitle.setLayoutParams(llp_title);
         textViewTitle.setTextIsSelectable(true);
         textViewTitle.setText(urlTitle);
         ll.addView(textViewTitle);

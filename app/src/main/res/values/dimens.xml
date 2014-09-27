@@ -3,6 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="text_img_in_card_margin">25px</dimen>
+    <dimen name="user_title_margin">120px</dimen>
+    <dimen name="remove_icon_size">70px</dimen>
 
 
 </resources>

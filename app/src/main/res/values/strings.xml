@@ -13,7 +13,9 @@
     <string name="settings">No settings available now</string>
 
     <!--Details-->
-    <string name="url_contained_title">Link in this tweet:</string>
+    <string name="url_contained_title">Related URL links:</string>
+    <string name="source_twitter">From twitter</string>
+    <string name="source_plus">From Google+</string>
 
     <!--Search-->
     <string name="search_title">Search</string>

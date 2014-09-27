@@ -197,12 +197,12 @@ public class GooglePlus {
 
 
         if (feed.getActivities().isEmpty()) {
-            System.out.println("No activities found.");
+            Log.d("Google+:","No activities found.");
         } else {
-            if (feed.getActivities().size() == MAX_RESULTS) {
-                System.out.print("First ");
-            }
-            System.out.println(feed.getActivities().size() + " activities found:");
+            //if (feed.getActivities().size() == MAX_RESULTS) {
+            //    System.out.print("First ");
+            //}
+            Log.d("Google+:",feed.getActivities().size() + " activities found:");
             //for (Activity activity : feed.getActivities()) {
             //    Log.d("Google+:", "-----------------------------------------------");
             //    Log.d("Google+:", "HTML Content: " + activity.getObject().getContent());

@@ -15,7 +15,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,8 +61,8 @@ public class MainActivity extends Activity {
     Twitter twitter;
 
     public String DEFAULT_QUERY = "Google Glass";
-    public String SOURCE_PLUS = "+";
-    public String SOURCE_TWITTER = "@";
+    public static String SOURCE_PLUS = "+";
+    public static String SOURCE_TWITTER = "@";
     private static final int MAX_RESULTS_TWITTER = 10;
 
     @Override
@@ -113,11 +112,17 @@ public class MainActivity extends Activity {
                 // do something with position
                 Intent intent = new Intent();
                 intent.putExtra("pos", position);
+                intent.putExtra("source", dataset.get(position).getSource());
                 intent.putExtra("user", dataset.get(position).getUser());
                 intent.putExtra("content", dataset.get(position).getContent());
                 intent.putExtra("time", dataset.get(position).getExactTime());
-                if(dataset.get(position).getUrl_contained() != null && dataset.get(position).getUrl_contained().length > 0){
-                    intent.putExtra("url", dataset.get(position).getUrl_contained()[0].getText());
+                //Url for twitter
+                if(dataset.get(position).getUrl_contained_twitter() != null && dataset.get(position).getUrl_contained_twitter().length > 0){
+                    intent.putExtra("url", dataset.get(position).getUrl_contained_twitter()[0].getText());
+                }
+                //Url for Google+
+                if(dataset.get(position).getUrl_contained_plus() != null && dataset.get(position).getUrl_contained_plus().length > 0){
+                    intent.putExtra("url", dataset.get(position).getUrl_contained_plus()[0]);
                 }
                 intent.setClass(self, DetailActivity.class);
                 startActivity(intent);
@@ -246,7 +251,7 @@ public class MainActivity extends Activity {
                     StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL(), SOURCE_TWITTER);
                     URLEntity urls[] = s.getURLEntities();
                     if(urls.length != 0){
-                        new_item.setUrl_contained(urls);
+                        new_item.setUrl_contained_twitter(urls);
                     }
                     MediaEntity m[] = s.getMediaEntities();
                     dataset.add(new_item);
@@ -318,7 +323,7 @@ public class MainActivity extends Activity {
                     StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL(), SOURCE_TWITTER);
                     URLEntity urls[] = s.getURLEntities();
                     if(urls.length != 0){
-                        new_item.setUrl_contained(urls);
+                        new_item.setUrl_contained_twitter(urls);
                     }
                     MediaEntity m[] = s.getMediaEntities();
                     dataset.add(new_item);
@@ -390,11 +395,11 @@ public class MainActivity extends Activity {
                     Date parsed_date = parseRFC3339Date(a.getPublished().toStringRfc3339());
                     Log.d(TAG, "\n" + parsed_date.toString());
 
-                    StatusItem new_item = new StatusItem(a.getActor().getDisplayName(), a.getObject().getContent(), parsed_date, null, SOURCE_PLUS);
-                    //URLEntity urls[] = a.getURLEntities();
-                    //if(urls.length != 0){
-                    //    new_item.setUrl_contained(urls);
-                    //}
+                    StatusItem new_item = new StatusItem(a.getActor().getDisplayName(), a.getObject().getContent(), parsed_date, a.getActor().getImage().getUrl(), SOURCE_PLUS);
+                    String urls[] = {a.getUrl()};
+                    if(urls.length != 0){
+                        new_item.setUrl_contained_plus(urls);
+                    }
                     //MediaEntity m[] = a.getMediaEntities();
                     dataset.add(new_item);
                     new DownloadImagesTask().execute(new_item);
@@ -475,6 +480,8 @@ public class MainActivity extends Activity {
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
+            //Trim the query
+            query = query.trim();
             newFetch();
         }
     }

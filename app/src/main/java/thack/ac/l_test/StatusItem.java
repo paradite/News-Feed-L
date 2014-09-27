@@ -1,15 +1,10 @@
 package thack.ac.l_test;
 
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.text.format.DateUtils;
-import android.util.Log;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.Date;
 
 import twitter4j.URLEntity;
@@ -23,19 +18,29 @@ public class StatusItem implements Comparable<StatusItem>{
     private Date created_at;
     private String profile_url;
     private Drawable profileDrawable;
-    private URLEntity[] url_contained;
+    private URLEntity[] url_contained_twitter;
+
+    public String[] getUrl_contained_plus() {
+        return url_contained_plus;
+    }
+
+    public void setUrl_contained_plus(String[] url_contained_plus) {
+        this.url_contained_plus = url_contained_plus;
+    }
+
+    private String[] url_contained_plus;
     private String source;
 
     public String getSource() {
         return source;
     }
 
-    public URLEntity[] getUrl_contained() {
-        return url_contained;
+    public URLEntity[] getUrl_contained_twitter() {
+        return url_contained_twitter;
     }
 
-    public void setUrl_contained(URLEntity[] url_contained) {
-        this.url_contained = url_contained;
+    public void setUrl_contained_twitter(URLEntity[] url_contained_twitter) {
+        this.url_contained_twitter = url_contained_twitter;
     }
 
     public StatusItem(String user, String content, Date created_at, String profile_url, String source) {
@@ -45,7 +50,7 @@ public class StatusItem implements Comparable<StatusItem>{
         this.profile_url = profile_url;
         //this.profileDrawable = LoadImageFromWebOperations(profile_url);
         //Leave the fetching of profile picture to the adapter to do
-        this.url_contained = null;
+        this.url_contained_twitter = null;
         this.source = source;
     }
 

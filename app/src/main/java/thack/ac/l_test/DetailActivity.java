@@ -31,12 +31,22 @@ public class DetailActivity extends Activity {
         //Get the index from the previous activity
         int position = getIntent().getExtras().getInt("pos");
         String user = getIntent().getExtras().getString("user");
+        String source = getIntent().getExtras().getString("source");
+        //Parse the source
+        if(source.equals(MainActivity.SOURCE_TWITTER)){
+            source = getResources().getString(R.string.source_twitter);
+        }
+        if(source.equals(MainActivity.SOURCE_PLUS)){
+            source = getResources().getString(R.string.source_plus);
+        }
+
         String content = getIntent().getExtras().getString("content");
         String time = getIntent().getExtras().getString("time");
         String url = getIntent().getExtras().getString("url");
-        user = "@" + user;
 
         //Set up the CardViews and add the CardViews to the content view
+        CardView sourceCard = ViewHelper.setupCardView(this, new String[]{source});
+        detailView.addView(sourceCard);
         CardView userCard = ViewHelper.setupCardView(this, new String[]{user});
         detailView.addView(userCard);
         CardView contentCard = ViewHelper.setupCardView(this, new String[]{content});
