@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -41,6 +43,8 @@ public class DetailActivity extends Activity {
         }
 
         String content = getIntent().getExtras().getString("content");
+        //Parse the html elements
+        Spanned content_spanned = Html.fromHtml(content);
         String time = getIntent().getExtras().getString("time");
         String url = getIntent().getExtras().getString("url");
 
@@ -49,14 +53,16 @@ public class DetailActivity extends Activity {
         detailView.addView(sourceCard);
         CardView userCard = ViewHelper.setupCardView(this, new String[]{user});
         detailView.addView(userCard);
-        CardView contentCard = ViewHelper.setupCardView(this, new String[]{content});
+        CardView contentCard = ViewHelper.setupCardView(this, new CharSequence[]{content_spanned});
         detailView.addView(contentCard);
         CardView timeCard = ViewHelper.setupCardView(this, new String[]{time});
         detailView.addView(timeCard);
-        if(url != null){
-            CardView urlCard = ViewHelper.setupURLCardView(this, new String[]{url});
-            detailView.addView(urlCard);
-        }
+
+        //Separate URL CardView is not needed as the links in content view is clickable
+        //if(url != null){
+        //    CardView urlCard = ViewHelper.setupURLCardView(this, new String[]{url});
+        //    detailView.addView(urlCard);
+        //}
     }
 
 

@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -52,6 +53,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             mTextViewTime = (TextView) v.findViewById(R.id.item_time);
             imgViewIcon = (ImageView) v.findViewById(R.id.item_icon);
             imgViewRemoveIcon = (ImageView) v.findViewById(R.id.remove_icon);
+
+            mTextViewContent.setOnClickListener(this);
             imgViewRemoveIcon.setOnClickListener(this);
             v.setOnClickListener(this);
         }
@@ -98,6 +101,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.mTextViewTitle.setText(item.getSource() + item.getUser());
         //Add content and timing to the textview
         String content = item.getContent();
+        //Parse the html elements
+        Spanned content_spanned = Html.fromHtml(content);
         CharSequence timing = item.getDisplayTime();
         if(queried_term != null){
             //Format the queried term
@@ -106,7 +111,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             final Pattern p = Pattern.compile(clean_query, Pattern.CASE_INSENSITIVE);
             final Matcher matcher = p.matcher(content);
 
-            final SpannableStringBuilder spannable_content = new SpannableStringBuilder(content);
+            final SpannableStringBuilder spannable_content = new SpannableStringBuilder(content_spanned);
             final StyleSpan span = new StyleSpan(Typeface.BOLD);
             while (matcher.find()) {
                 spannable_content.setSpan(

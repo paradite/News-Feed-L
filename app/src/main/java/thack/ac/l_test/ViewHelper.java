@@ -115,7 +115,7 @@ public class ViewHelper {
 
     }
 
-    public static CardView setupCardView(Context c, String[] s) {
+    public static CardView setupCardView(Context c, CharSequence[] s) {
 
         //Set up the Layout Params
         setupCardViewLayoutParams(c, 1);
@@ -128,9 +128,11 @@ public class ViewHelper {
         cardView.addView(ll);
 
         //Add Children views into the LinearLayout
-        for(String each_s : s){
+        for(CharSequence each_s : s){
             TextView textView = new TextView(c);
             textView.setLayoutParams(llp);
+            //Allow links
+            textView.setAutoLinkMask(Linkify.ALL);
             textView.setTextIsSelectable(true);
             textView.setText(each_s);
             ll.addView(textView);
