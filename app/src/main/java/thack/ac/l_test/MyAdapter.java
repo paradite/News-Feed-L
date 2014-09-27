@@ -109,7 +109,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             String clean_query = queried_term.replaceAll("[^\\w\\s]","");
             //Apply different styles to the term queried term
             final Pattern p = Pattern.compile(clean_query, Pattern.CASE_INSENSITIVE);
-            final Matcher matcher = p.matcher(content);
+            final Matcher matcher = p.matcher(content_spanned);
 
             final SpannableStringBuilder spannable_content = new SpannableStringBuilder(content_spanned);
             final StyleSpan span = new StyleSpan(Typeface.BOLD);
