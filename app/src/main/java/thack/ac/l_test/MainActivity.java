@@ -272,6 +272,7 @@ public class MainActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             dialog = new ProgressDialog(self);
+            this.dialog.setCanceledOnTouchOutside(false);
             this.dialog.setMessage("Getting tweets...");
             this.dialog.show();
         }
@@ -369,6 +370,7 @@ public class MainActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             dialog = new ProgressDialog(self);
+            this.dialog.setCanceledOnTouchOutside(false);
             this.dialog.setMessage("Getting Google+ posts...");
             this.dialog.show();
         }
@@ -464,6 +466,7 @@ public class MainActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             dialog = new ProgressDialog(self);
+            this.dialog.setCanceledOnTouchOutside(false);
             this.dialog.setMessage("Getting Instagram posts...");
             this.dialog.show();
         }
@@ -570,7 +573,7 @@ public class MainActivity extends Activity {
             String pic_url = statusItems[0].getContent_pic_url();
             statusItems[0].setProfileDrawable(LoadImageFromWebOperations(profile_url));
             if(pic_url != null){
-                Log.e(TAG, statusItems[0].getSource() + statusItems[0].getUser() + ": " + pic_url);
+                //Log.e(TAG, statusItems[0].getSource() + statusItems[0].getUser() + ": " + pic_url);
                 statusItems[0].setContentDrawable(LoadImageFromWebOperations(pic_url));
             }
             return null;
@@ -652,73 +655,5 @@ public class MainActivity extends Activity {
         }
         return d;
     }
-
-    ///**
-    // * Async Task to make http call and sync with server
-    // */
-    //private class fetchMyTimelineFromTwitter extends AsyncTask<Void, Void, Void>{
-    //    private ProgressDialog dialog;
-    //
-    //    @Override
-    //    protected void onPreExecute() {
-    //        super.onPreExecute();
-    //        dialog = new ProgressDialog(self);
-    //        this.dialog.setMessage("Getting tweets...");
-    //        this.dialog.show();
-    //    }
-    //
-    //    @Override
-    //    protected Void doInBackground(Void... voids) {
-    //        try {
-    //            // gets Twitter instance with default credentials
-    //            User user = twitter.verifyCredentials();
-    //            List<twitter4j.Status> statuses = twitter.getHomeTimeline();
-    //
-    //            //Log.d(TAG, "Showing @" + user.getScreenName() + "'s home timeline.");
-    //            for (twitter4j.Status s : statuses) {
-    //                //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
-    //                StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL(), SOURCE_TWITTER);
-    //                URLEntity urls[] = s.getURLEntities();
-    //                if(urls.length != 0){
-    //                    new_item.setUrl_contained_twitter(urls);
-    //                }
-    //                MediaEntity m[] = s.getMediaEntities();
-    //                dataset.add(new_item);
-    //                new DownloadImagesTask().execute(new_item);
-    //            }
-    //            //Sort by time
-    //            Collections.sort(dataset);
-    //        } catch (TwitterException te) {
-    //            te.printStackTrace();
-    //            runOnUiThread(new Runnable() {
-    //                @Override
-    //                public void newSearch() {
-    //                    new AlertDialog.Builder(self)
-    //                            .setMessage("Error occurred when getting the tweets")
-    //                            .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-    //                                @Override
-    //                                public void onClick(DialogInterface dialogInterface, int i) {
-    //                                    newFetch();
-    //                                }
-    //                            })
-    //                            .setNegativeButton("Cancel", null)
-    //                            .setCancelable(true)
-    //                            .show();
-    //                }
-    //            });
-    //        }
-    //        return null;
-    //    }
-    //
-    //    @Override
-    //    protected void onPostExecute(Void aVoid) {
-    //        super.onPostExecute(aVoid);
-    //        if (dialog.isShowing()) {
-    //            dialog.dismiss();
-    //        }
-    //        //mAdapter.setmDataset(dataset);
-    //        mAdapter.notifyDataSetChanged();
-    //    }
-    //}
 
 }

@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
  * Created by paradite on 21/9/14.
  */
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+    private static final int MAX_LENGTH_CONTENT = 200;
     private ArrayList<StatusItem> mDataset;
     OnItemClickListener mItemClickListener;
 
@@ -109,10 +111,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         //Apply colors for different sources
         if(item.getSource().equals(MainActivity.SOURCE_TWITTER)){
             holder.mTextViewTitle.setTextColor(Color.parseColor("#0084B4"));
-            holder.mCardView.setBackgroundColor(Color.parseColor("#400084B4"));
+            holder.mCardView.setBackgroundColor(Color.parseColor("#330084B4"));
         }else if(item.getSource().equals(MainActivity.SOURCE_PLUS)){
             holder.mTextViewTitle.setTextColor(Color.parseColor("#DD4B39"));
-            holder.mCardView.setBackgroundColor(Color.parseColor("#40DD4B39"));
+            holder.mCardView.setBackgroundColor(Color.parseColor("#33DD4B39"));
         }else if(item.getSource().equals(MainActivity.SOURCE_INSTA)){
             holder.mTextViewTitle.setTextColor(Color.parseColor("#675144"));
             holder.mCardView.setBackgroundColor(Color.parseColor("#66675144"));
@@ -124,6 +126,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         String content = item.getContent();
         //Parse the html elements
         Spanned content_spanned = Html.fromHtml(content);
+        //Get part of the string if too long
+        if(content_spanned.length() > 200){
+            content_spanned = (Spanned)TextUtils.concat(content_spanned.subSequence(0, MAX_LENGTH_CONTENT), "...\n(Click to read more)");
+        }
         CharSequence timing = item.getDisplayTime();
         if(queried_term != null){
             //Format the queried term
