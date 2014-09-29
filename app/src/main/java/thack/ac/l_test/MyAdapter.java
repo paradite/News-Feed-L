@@ -103,18 +103,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - replace the contents of the view with that element
 
         //Differentiate different sources
-        //Reference: http://colour.charlottedann.com/
+        //Reference: http://colour.charlottedann.com/ and http://stackoverflow.com/questions/15852122/hex-transparency-in-colors
+
         holder.mTextViewTitle.setText(item.getSource() + item.getUser());
         //Apply colors for different sources
         if(item.getSource().equals(MainActivity.SOURCE_TWITTER)){
-            holder.mCardView.setBackgroundColor(Color.argb(75, 0,132,180));
-            //holder.mTextViewTitle.setTextColor(Color.rgb(0,132,180));
+            holder.mTextViewTitle.setTextColor(Color.parseColor("#0084B4"));
+            holder.mCardView.setBackgroundColor(Color.parseColor("#400084B4"));
         }else if(item.getSource().equals(MainActivity.SOURCE_PLUS)){
-            //holder.mTextViewTitle.setTextColor(Color.rgb(222,76,58));
-            holder.mCardView.setBackgroundColor(Color.argb(75, 222,76,58));
+            holder.mTextViewTitle.setTextColor(Color.parseColor("#DD4B39"));
+            holder.mCardView.setBackgroundColor(Color.parseColor("#40DD4B39"));
         }else if(item.getSource().equals(MainActivity.SOURCE_INSTA)){
-            //holder.mTextViewTitle.setTextColor(Color.rgb(102,80,67));
-            holder.mCardView.setBackgroundColor(Color.argb(75, 102,80,67));
+            holder.mTextViewTitle.setTextColor(Color.parseColor("#675144"));
+            holder.mCardView.setBackgroundColor(Color.parseColor("#66675144"));
         }else{
             holder.mCardView.setBackgroundColor(Color.parseColor("#FFFAFAFA"));
         }

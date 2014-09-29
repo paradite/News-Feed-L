@@ -62,10 +62,12 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/item_icon"
-                android:layout_marginLeft="@dimen/text_img_in_card_margin"
-                android:layout_marginRight="@dimen/text_img_in_card_margin"
+                android:layout_marginStart="@dimen/text_img_in_card_margin"
+                android:layout_marginEnd="@dimen/user_title_margin"
                 android:textSize="16sp"
-                android:autoLink="all"/>
+                android:autoLink="all"
+                android:maxLines="8"
+                android:ellipsize="end"/>
             <!-- Content Picture -->
             <ImageView
                 android:id="@+id/item_content_pic"
