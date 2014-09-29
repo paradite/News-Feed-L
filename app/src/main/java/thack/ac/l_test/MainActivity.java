@@ -18,9 +18,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -200,6 +202,29 @@ public class MainActivity extends Activity {
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        //Validate the searchView input
+        SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                Log.d(TAG, "Query word= "+s);
+                s = getStringAlphanumeric(s);
+                Log.d(TAG, "Validated word= "+s);
+                if (s.length() < 2) {
+                    Toast.makeText(getApplicationContext(), "At least 2 letter please.", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else {
+                    searchMenuItem.collapseActionView();
+                    return false;
+                }
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return true;
+            }
+        };
+        searchView.setOnQueryTextListener(queryTextListener);
+
         searchMenuItem.expandActionView();
         //searchView.setIconified(false);
         return true;
@@ -352,10 +377,14 @@ public class MainActivity extends Activity {
 
     private void newGooglePlusFetch() {
         //Parse query for Google+
-        String clean_query = query.replaceAll("[^\\w\\s]","");
+        String clean_query = getStringSpaceAlphanumeric(query);
         if(!PLUS_EXECUTED){
             new fetchSearchFromGooglePlus().execute(clean_query);
         }
+    }
+
+    private String getStringSpaceAlphanumeric(String s) {
+        return s.replaceAll("[^\\w\\s]","");
     }
 
     /**
@@ -448,10 +477,14 @@ public class MainActivity extends Activity {
 
     private void newInstaFetch() {
         //Parse query more for Instagram (remove spaces)
-        String cleaner_query = query.replaceAll("[^\\w\\s]","").replace(" ", "");
+        String cleaner_query = getStringAlphanumeric(query);
         if(!INSTA_EXECUTED){
             new fetchSearchFromInstagram().execute(cleaner_query);
         }
+    }
+
+    private String getStringAlphanumeric(String s) {
+        return s.replaceAll("[^\\w]", "");
     }
 
     /**
@@ -654,6 +687,16 @@ public class MainActivity extends Activity {
             d = s.parse(datestring);
         }
         return d;
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // check if no view has focus:
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 
 }
