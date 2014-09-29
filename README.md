@@ -5,6 +5,7 @@ Possible Names:
 ---
 + No Login (as the app only uses publicly accessible feeds)
 + Social Monitor (the app monitors social media based on keywords)
++ What's going on (real time keyword tracking)
 
 Features:
 ---

@@ -235,7 +235,7 @@ public class GooglePlus {
     //    }
     //    try {
     //        try {
-    //            run();
+    //            newSearch();
     //            return;
     //        } catch (HttpResponseException e) {
     //            System.err.println(e.getMessage());

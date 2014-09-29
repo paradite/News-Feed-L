@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.provider.CalendarContract;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -41,6 +43,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     // Provide a reference to the type of views that you are using
     // (custom viewholder)
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public CardView mCardView;
         public TextView mTextViewTitle;
         public TextView mTextViewContent;
         public ImageView mImageViewContentPic;
@@ -49,6 +52,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public ImageView imgViewRemoveIcon;
         public ViewHolder(View v) {
             super(v);
+            mCardView = (CardView) v.findViewById(R.id.card_view);
             mTextViewTitle = (TextView) v.findViewById(R.id.item_title);
             mTextViewContent = (TextView) v.findViewById(R.id.item_content);
             mImageViewContentPic = (ImageView) v.findViewById(R.id.item_content_pic);
@@ -103,13 +107,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.mTextViewTitle.setText(item.getSource() + item.getUser());
         //Apply colors for different sources
         if(item.getSource().equals(MainActivity.SOURCE_TWITTER)){
-            holder.mTextViewTitle.setTextColor(Color.rgb(0,132,180));
-        }
-        else if(item.getSource().equals(MainActivity.SOURCE_PLUS)){
-            holder.mTextViewTitle.setTextColor(Color.rgb(222,76,58));
-        }
-        else if(item.getSource().equals(MainActivity.SOURCE_INSTA)){
-            holder.mTextViewTitle.setTextColor(Color.rgb(102,80,67));
+            holder.mCardView.setBackgroundColor(Color.argb(75, 0,132,180));
+            //holder.mTextViewTitle.setTextColor(Color.rgb(0,132,180));
+        }else if(item.getSource().equals(MainActivity.SOURCE_PLUS)){
+            //holder.mTextViewTitle.setTextColor(Color.rgb(222,76,58));
+            holder.mCardView.setBackgroundColor(Color.argb(75, 222,76,58));
+        }else if(item.getSource().equals(MainActivity.SOURCE_INSTA)){
+            //holder.mTextViewTitle.setTextColor(Color.rgb(102,80,67));
+            holder.mCardView.setBackgroundColor(Color.argb(75, 102,80,67));
+        }else{
+            holder.mCardView.setBackgroundColor(Color.parseColor("#FFFAFAFA"));
         }
 
         //Add content and timing to the textview

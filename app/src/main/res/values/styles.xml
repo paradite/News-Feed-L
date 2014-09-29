@@ -3,6 +3,20 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+
+        <!--Android L Animations-->
+        <!-- enable window content transitions -->
+        <!--<item name="android:windowContentTransitions">true</item>-->
+
+        <!-- specify enter and exit transitions -->
+        <!--<item name="android:windowEnterTransition">@transition/explode</item>-->
+        <!--<item name="android:windowExitTransition">@transition/explode</item>-->
+
+        <!-- specify shared element transitions -->
+        <!--<item name="android:windowSharedElementEnterTransition">-->
+            <!--@transition/move_image</item>-->
+        <!--<item name="android:windowSharedElementExitTransition">-->
+            <!--@transition/move_image</item>-->
     </style>
 
 </resources>
