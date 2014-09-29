@@ -35,10 +35,7 @@
                 android:layout_width="@dimen/remove_icon_size"
                 android:layout_height="@dimen/remove_icon_size"
                 android:layout_alignParentEnd="true"
-                android:layout_marginLeft="@dimen/text_img_in_card_margin"
-                android:layout_marginRight="@dimen/text_img_in_card_margin"
-                android:layout_marginTop="@dimen/text_img_in_card_margin"
-                android:layout_marginBottom="1dp"
+                android:padding="@dimen/remove_icon_padding"
                 android:contentDescription="icon"
                 android:src="@drawable/ic_action_remove"
                 />

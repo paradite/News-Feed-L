@@ -16,7 +16,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         card_view:cardCornerRadius="2dp"
-        android:layout_marginBottom="5dp"
+
         >
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="fill_parent"
@@ -35,15 +35,13 @@
                 android:contentDescription="icon"
                 android:src="@drawable/ic_launcher"
                 />
+            <!--Remove icon-->
             <ImageView
                 android:id="@+id/remove_icon"
                 android:layout_width="@dimen/remove_icon_size"
                 android:layout_height="@dimen/remove_icon_size"
                 android:layout_alignParentEnd="true"
-                android:layout_marginLeft="@dimen/text_img_in_card_margin"
-                android:layout_marginRight="@dimen/text_img_in_card_margin"
-                android:layout_marginTop="@dimen/text_img_in_card_margin"
-                android:layout_marginBottom="1dp"
+                android:padding="@dimen/remove_icon_padding"
                 android:contentDescription="icon"
                 android:src="@drawable/ic_action_remove"
                 />
