@@ -65,6 +65,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             mTextViewContent.setOnClickListener(this);
             imgViewRemoveIcon.setOnClickListener(this);
             v.setOnClickListener(this);
+            mTextViewContent.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (mItemClickListener != null) {
+                        mItemClickListener.onItemClick(view, getPosition());
+                    }
+                    return false;
+                }
+            });
         }
 
 
@@ -78,6 +87,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 mItemClickListener.onItemClick(v, getPosition());
             }
         }
+
+
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)

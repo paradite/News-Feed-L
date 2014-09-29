@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">News Feed L</string>
-    <string name="hello_world">Search something!</string>
+    <string name="app_name">Happening</string>
+    <string name="hello_world">Search to see what\'s happening!</string>
     <string name="credit">Hello L from Zhu Liang!</string>
     <string name="action_settings">Settings</string>
     <string name="action_about">About</string>
@@ -20,5 +20,5 @@
 
     <!--Search-->
     <string name="search_title">Search</string>
-    <string name="search_hint">Search anything</string>
+    <string name="search_hint">Enter keyword(s)</string>
 </resources>
