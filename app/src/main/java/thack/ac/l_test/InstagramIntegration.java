@@ -1,17 +1,12 @@
 package thack.ac.l_test;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,10 +19,9 @@ public class InstagramIntegration {
     public static final String TAG = "InstagramIntegration: ";
     public static final String APIURL = "https://api.instagram.com/v1";
     public static final String CLIENTID = "bc83eecbf2094edfa177eb9db64f0d9b";
-    public static final int MAX_COUNT = 10;
 
     public static String buildURL(String query){
-        return APIURL + "/tags/" + query + "/media/recent" + "?client_id=" + CLIENTID + "&count=" + MAX_COUNT;
+        return APIURL + "/tags/" + query + "/media/recent" + "?client_id=" + CLIENTID + "&count=" + Utils.MAX_COUNT;
     }
 
     /**
@@ -39,7 +33,7 @@ public class InstagramIntegration {
         String urlString = buildURL(query);
         URL url = new URL(urlString);
         InputStream inputStream = url.openConnection().getInputStream();
-        String response = streamToString(inputStream);
+        String response = Utils.streamToString(inputStream);
         //Log.e(TAG, response);
         if(response == null){
             return null;
@@ -66,7 +60,7 @@ public class InstagramIntegration {
                 //Log.e(TAG, caption);
                 //Log.e(TAG, time.toString());
                 //Log.e(TAG, profile_picture);
-                StatusItem new_item = new StatusItem(username, caption, time, profile_picture, MainActivity.SOURCE_INSTA);
+                StatusItem new_item = new StatusItem(username, caption, time, profile_picture, Utils.SOURCE_INSTA);
 
                 //Add image to the item, specific to Instagram
                 new_item.setContent_pic_url(imageUrlString);
@@ -77,30 +71,4 @@ public class InstagramIntegration {
         }
     }
 
-    /**
-     * Method that returns String from the InputStream given by p_is
-     * @param p_is The given InputStream
-     * @return The String from the InputStream
-     */
-    public static String streamToString(InputStream p_is)
-    {
-        try
-        {
-            BufferedReader m_br;
-            StringBuffer m_outString = new StringBuffer();
-            m_br = new BufferedReader(new InputStreamReader(p_is));
-            String m_read = m_br.readLine();
-            while(m_read != null)
-            {
-                m_outString.append(m_read);
-                m_read =m_br.readLine();
-            }
-            return m_outString.toString();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

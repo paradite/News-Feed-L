@@ -35,13 +35,13 @@ public class DetailActivity extends Activity {
         String user = getIntent().getExtras().getString("user");
         String source = getIntent().getExtras().getString("source");
         //Parse the source
-        if(source.equals(MainActivity.SOURCE_TWITTER)){
+        if(source.equals(Utils.SOURCE_TWITTER)){
             source = getResources().getString(R.string.source_twitter);
         }
-        if(source.equals(MainActivity.SOURCE_PLUS)){
+        if(source.equals(Utils.SOURCE_PLUS)){
             source = getResources().getString(R.string.source_plus);
         }
-        if(source.equals(MainActivity.SOURCE_INSTA)){
+        if(source.equals(Utils.SOURCE_INSTA)){
             source = getResources().getString(R.string.source_insta);
         }
 

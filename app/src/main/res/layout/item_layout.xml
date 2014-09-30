@@ -20,8 +20,8 @@
             <!-- icon -->
             <ImageView
                 android:id="@+id/item_icon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/profile_pic_size"
+                android:layout_height="@dimen/profile_pic_size"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/text_img_in_card_margin"
@@ -45,6 +45,7 @@
             <!-- title -->
             <TextView
                 android:id="@+id/item_title"
+                android:text="Name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/item_icon"
@@ -53,10 +54,22 @@
                 android:layout_marginEnd="@dimen/user_title_margin"
                 android:layout_marginRight="@dimen/user_title_margin"
                 android:layout_marginTop="@dimen/text_img_in_card_margin"
-                android:layout_marginBottom="@dimen/text_img_in_card_margin"
-                android:textSize="20sp"
+                android:textSize="@dimen/name_text_size"
                 android:maxLines="1"
                 android:ellipsize="end"/>
+            <!-- Time -->
+            <TextView
+                android:id="@+id/item_time"
+                android:text="time"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/item_icon"
+                android:layout_toRightOf="@id/item_icon"
+                android:layout_below="@id/item_title"
+                android:layout_marginEnd="@dimen/user_title_margin"
+                android:layout_marginRight="@dimen/user_title_margin"
+                android:layout_marginBottom="@dimen/text_img_in_card_margin"
+                android:textSize="@dimen/time_text_size" />
             <!-- Content -->
             <TextView
                 android:id="@+id/item_content"
@@ -67,7 +80,7 @@
                 android:layout_marginLeft="@dimen/text_img_in_card_margin"
                 android:layout_marginEnd="@dimen/user_title_margin"
                 android:layout_marginRight="@dimen/user_title_margin"
-                android:textSize="16sp"
+                android:textSize="@dimen/content_text_size"
                 android:autoLink="all"
                 android:text="Content"/>
             <!-- Content Picture -->
@@ -85,16 +98,6 @@
                 android:visibility="visible"
                 android:layout_centerHorizontal="true"
                 />
-            <!-- Time -->
-            <TextView
-                android:id="@+id/item_time"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/item_content_pic"
-                android:layout_marginLeft="@dimen/text_img_in_card_margin"
-                android:layout_marginRight="@dimen/text_img_in_card_margin"
-                android:layout_marginBottom="@dimen/text_img_in_card_margin"
-                android:textSize="14sp" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

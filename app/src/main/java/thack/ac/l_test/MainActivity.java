@@ -7,7 +7,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -24,15 +23,10 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
-import java.util.TimeZone;
 
 import twitter4j.MediaEntity;
 import twitter4j.Query;
@@ -50,35 +44,32 @@ public class MainActivity extends Activity {
 
     //Views
     //Search Related Views
-    private SearchView searchView;
-    private MenuItem searchMenuItem;
+    private SearchView   searchView;
+    private MenuItem     searchMenuItem;
     //RecyclerView
     private RecyclerView mRecyclerView;
     //Introduction CardView
-    private CardView mCardView;
-    private ImageView removeIconView;
-    private TextView titleView;
+    private CardView     mCardView;
+    private ImageView    removeIconView;
+    private TextView     titleView;
 
 
-    private MyAdapter mAdapter;
+    private MyAdapter                  mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     ArrayList<StatusItem> dataset;
     public final String TAG = ((Object) this).getClass().getSimpleName();
     public String query;
     //Twitter related
     TwitterFactory tf;
-    Twitter twitter;
+    Twitter        twitter;
 
     //Boolean to track if each async task has been executed
-    private boolean PLUS_EXECUTED = false;
+    private boolean PLUS_EXECUTED    = false;
     private boolean TWITTER_EXECUTED = false;
-    private boolean INSTA_EXECUTED = false;
+    private boolean INSTA_EXECUTED   = false;
 
-    public String DEFAULT_QUERY = "Google Glass";
-    public static String SOURCE_PLUS = "+";
-    public static String SOURCE_TWITTER = "@";
-    public static String SOURCE_INSTA = "#";
-    private static final int MAX_RESULTS_TWITTER = 10;
+    public               String DEFAULT_QUERY       = "Google Glass";
+    private static final int    MAX_RESULTS_TWITTER = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +77,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         //Set up introduction card
-        mCardView = (CardView)findViewById(R.id.card_view);
+        mCardView = (CardView) findViewById(R.id.card_view);
         removeIconView = (ImageView) mCardView.findViewById(R.id.remove_icon);
         titleView = (TextView) mCardView.findViewById(R.id.item_title);
         removeIconView.setOnClickListener(new View.OnClickListener() {
@@ -99,7 +90,7 @@ public class MainActivity extends Activity {
         mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(searchView != null){
+                if (searchView != null) {
                     searchMenuItem.expandActionView();
                     //searchView.setIconified(false);
                 }
@@ -123,7 +114,7 @@ public class MainActivity extends Activity {
         dataset = new ArrayList<StatusItem>();
 
         // Construct default query
-        if(query == null){
+        if (query == null) {
             query = DEFAULT_QUERY;
         }
 
@@ -133,7 +124,7 @@ public class MainActivity extends Activity {
         mAdapter.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
-            public void onItemClick(View v , int position) {
+            public void onItemClick(View v, int position) {
                 // do something with position
                 Intent intent = new Intent();
                 intent.putExtra("pos", position);
@@ -142,11 +133,11 @@ public class MainActivity extends Activity {
                 intent.putExtra("content", dataset.get(position).getContent());
                 intent.putExtra("time", dataset.get(position).getExactTime());
                 //Url for twitter
-                if(dataset.get(position).getUrl_contained_twitter() != null && dataset.get(position).getUrl_contained_twitter().length > 0){
+                if (dataset.get(position).getUrl_contained_twitter() != null && dataset.get(position).getUrl_contained_twitter().length > 0) {
                     intent.putExtra("url", dataset.get(position).getUrl_contained_twitter()[0].getText());
                 }
                 //Url for Google+
-                if(dataset.get(position).getUrl_contained_plus() != null && dataset.get(position).getUrl_contained_plus().length > 0){
+                if (dataset.get(position).getUrl_contained_plus() != null && dataset.get(position).getUrl_contained_plus().length > 0) {
                     intent.putExtra("url", dataset.get(position).getUrl_contained_plus()[0]);
                 }
                 intent.setClass(self, DetailActivity.class);
@@ -161,7 +152,7 @@ public class MainActivity extends Activity {
         handleIntent(getIntent());
     }
 
-    public void newFetch(){
+    public void newFetch() {
         //Update the queried term in adapter
         MyAdapter.setQueriedTerm(query);
 
@@ -177,14 +168,14 @@ public class MainActivity extends Activity {
         newTwitterFetch();
 
         mCardView.setVisibility(View.VISIBLE);
-        if(titleView != null){
+        if (titleView != null) {
             titleView.setText("Search result for " + query + ":");
         }
     }
 
     private void newTwitterFetch() {
         //Execute twitter first, start others at the end of twitter
-        if(!TWITTER_EXECUTED){
+        if (!TWITTER_EXECUTED) {
             new fetchSearchFromTwitter().execute(query);
         }
     }
@@ -206,9 +197,9 @@ public class MainActivity extends Activity {
         SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Log.d(TAG, "Query word= "+s);
+                Log.d(TAG, "Query word= " + s);
                 s = getStringAlphanumeric(s);
-                Log.d(TAG, "Validated word= "+s);
+                Log.d(TAG, "Validated word= " + s);
                 if (s.length() < 2) {
                     Toast.makeText(getApplicationContext(), "At least 2 letter please.", Toast.LENGTH_SHORT).show();
                     return true;
@@ -249,7 +240,7 @@ public class MainActivity extends Activity {
             alert.setCancelable(true);
             alert.show();
             return true;
-        }else if(id == R.id.action_settings){
+        } else if (id == R.id.action_settings) {
             AlertDialog.Builder alert = new AlertDialog.Builder(self);
             alert.setTitle(getResources().getString(R.string.action_settings));
             String settings = getResources().getString(R.string.settings);
@@ -262,19 +253,14 @@ public class MainActivity extends Activity {
             alert.setCancelable(true);
             alert.show();
             return true;
-        }else if(id == R.id.action_refresh){
+        } else if (id == R.id.action_refresh) {
             newFetch();
 
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public static int randInt(int min , int max) {
-        Random rand = new Random();
-        return rand.nextInt((max - min) + 1) + min;
-    }
-
-    public void setUpTwitter4j(){
+    public void setUpTwitter4j() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
                 .setOAuthConsumerKey("vdKT4mCY9D2eK6y238veerGgj")
@@ -290,7 +276,7 @@ public class MainActivity extends Activity {
      * Async Task to make http call and sync with server
      * Twitter Async Task
      */
-    private class fetchSearchFromTwitter extends AsyncTask<String, Void, Void>{
+    private class fetchSearchFromTwitter extends AsyncTask<String, Void, Void> {
         private ProgressDialog dialog;
 
         @Override
@@ -316,9 +302,9 @@ public class MainActivity extends Activity {
                 //Add in new data to the data set
                 for (twitter4j.Status s : statuses) {
                     //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
-                    StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getMiniProfileImageURL(), SOURCE_TWITTER);
+                    StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getProfileImageURL(), Utils.SOURCE_TWITTER);
                     URLEntity urls[] = s.getURLEntities();
-                    if(urls.length != 0){
+                    if (urls.length != 0) {
                         new_item.setUrl_contained_twitter(urls);
                     }
                     MediaEntity m[] = s.getMediaEntities();
@@ -331,7 +317,7 @@ public class MainActivity extends Activity {
             } catch (TwitterException te) {
                 te.printStackTrace();
 
-                if(!TWITTER_EXECUTED){
+                if (!TWITTER_EXECUTED) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -378,13 +364,13 @@ public class MainActivity extends Activity {
     private void newGooglePlusFetch() {
         //Parse query for Google+
         String clean_query = getStringSpaceAlphanumeric(query);
-        if(!PLUS_EXECUTED){
+        if (!PLUS_EXECUTED) {
             new fetchSearchFromGooglePlus().execute(clean_query);
         }
     }
 
     private String getStringSpaceAlphanumeric(String s) {
-        return s.replaceAll("[^\\w\\s]","");
+        return s.replaceAll("[^\\w\\s]", "");
     }
 
     /**
@@ -392,7 +378,7 @@ public class MainActivity extends Activity {
      * Async Task to make http call and sync with server
      * Google+ Async Task
      */
-    private class fetchSearchFromGooglePlus extends AsyncTask<String, Void, Void>{
+    private class fetchSearchFromGooglePlus extends AsyncTask<String, Void, Void> {
         private ProgressDialog dialog;
 
         @Override
@@ -415,12 +401,12 @@ public class MainActivity extends Activity {
                 for (com.google.api.services.plus.model.Activity a : activities) {
                     //Log.d(TAG, "@" + a.getActor().getDisplayName());
                     //Log.d(TAG, "" + a.getPublished().getTimeZoneShift());
-                    Date parsed_date = parseRFC3339Date(a.getPublished().toStringRfc3339());
+                    Date parsed_date = Utils.parseRFC3339Date(a.getPublished().toStringRfc3339());
                     //Log.d(TAG, "\n" + parsed_date.toString());
 
-                    StatusItem new_item = new StatusItem(a.getActor().getDisplayName(), a.getObject().getContent(), parsed_date, a.getActor().getImage().getUrl(), SOURCE_PLUS);
+                    StatusItem new_item = new StatusItem(a.getActor().getDisplayName(), a.getObject().getContent(), parsed_date, a.getActor().getImage().getUrl(), Utils.SOURCE_PLUS);
                     String urls[] = {a.getUrl()};
-                    if(urls.length != 0){
+                    if (urls.length != 0) {
                         new_item.setUrl_contained_plus(urls);
                     }
                     //MediaEntity m[] = a.getMediaEntities();
@@ -432,7 +418,7 @@ public class MainActivity extends Activity {
                 Collections.sort(dataset);
             } catch (Exception e) {
                 e.printStackTrace();
-                if(!PLUS_EXECUTED){
+                if (!PLUS_EXECUTED) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -478,7 +464,7 @@ public class MainActivity extends Activity {
     private void newInstaFetch() {
         //Parse query more for Instagram (remove spaces)
         String cleaner_query = getStringAlphanumeric(query);
-        if(!INSTA_EXECUTED){
+        if (!INSTA_EXECUTED) {
             new fetchSearchFromInstagram().execute(cleaner_query);
         }
     }
@@ -492,7 +478,7 @@ public class MainActivity extends Activity {
      * Async Task to make http call and sync with server
      * Instagram Async Task
      */
-    private class fetchSearchFromInstagram extends AsyncTask<String, Void, Void>{
+    private class fetchSearchFromInstagram extends AsyncTask<String, Void, Void> {
         private ProgressDialog dialog;
 
         @Override
@@ -512,7 +498,7 @@ public class MainActivity extends Activity {
                 items = InstagramIntegration.newSearch(strings[0]);
             } catch (Exception e) {
                 e.printStackTrace();
-                if(!INSTA_EXECUTED){
+                if (!INSTA_EXECUTED) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -533,7 +519,7 @@ public class MainActivity extends Activity {
                 //Update async task tracker
                 INSTA_EXECUTED = true;
             }
-            if(items == null) return null;
+            if (items == null) return null;
             Log.d(TAG, "Showing Instagram search results for " + strings[0] + ":");
             //Add in new data to the data set
             for (StatusItem item : items) {
@@ -575,16 +561,16 @@ public class MainActivity extends Activity {
     public class DownloadAllImagesTask extends AsyncTask<ArrayList<StatusItem>, Void, Void> {
         @Override
         protected Void doInBackground(ArrayList<StatusItem>... arrayLists) {
-            for (StatusItem statusItem : arrayLists[0]){
+            for (StatusItem statusItem : arrayLists[0]) {
                 String profile_url = statusItem.getProfile_url();
                 String pic_url = statusItem.getContent_pic_url();
-                statusItem.setProfileDrawable(LoadImageFromWebOperations(profile_url));
-                if(pic_url != null){
+                statusItem.setProfileDrawable(Utils.LoadImageFromWebOperations(profile_url, 1));
+                if (pic_url != null) {
                     //Log.e(TAG, statusItem.getSource() + statusItem.getUser() + ": " + pic_url);
-                    statusItem.setContentDrawable(LoadImageFromWebOperations(pic_url));
+                    statusItem.setContentDrawable(Utils.LoadImageFromWebOperations(pic_url, 2));
                 }
                 runOnUiThread(new Runnable() {
-                    public void run(){
+                    public void run() {
                         mAdapter.notifyDataSetChanged();
                     }
                 });
@@ -604,10 +590,10 @@ public class MainActivity extends Activity {
         protected Void doInBackground(StatusItem... statusItems) {
             String profile_url = statusItems[0].getProfile_url();
             String pic_url = statusItems[0].getContent_pic_url();
-            statusItems[0].setProfileDrawable(LoadImageFromWebOperations(profile_url));
-            if(pic_url != null){
+            statusItems[0].setProfileDrawable(Utils.LoadImageFromWebOperations(profile_url, 1));
+            if (pic_url != null) {
                 //Log.e(TAG, statusItems[0].getSource() + statusItems[0].getUser() + ": " + pic_url);
-                statusItems[0].setContentDrawable(LoadImageFromWebOperations(pic_url));
+                statusItems[0].setContentDrawable(Utils.LoadImageFromWebOperations(pic_url, 2));
             }
             return null;
         }
@@ -615,22 +601,10 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void v) {
             runOnUiThread(new Runnable() {
-                public void run(){
+                public void run() {
                     mAdapter.notifyDataSetChanged();
                 }
             });
-        }
-    }
-
-    public static Drawable LoadImageFromWebOperations(String url) {
-        try {
-            InputStream is = (InputStream) new URL(url).getContent();
-            Drawable d = Drawable.createFromStream(is, "src name");
-            //Log.d("Converter: ", url + d.toString());
-            return d;
-        } catch (Exception e) {
-            Log.d("Exception: ", e.toString());
-            return null;
         }
     }
 
@@ -647,46 +621,6 @@ public class MainActivity extends Activity {
             query = query.trim();
             newFetch();
         }
-    }
-
-    public static java.util.Date parseRFC3339Date(String datestring) throws java.text.ParseException, IndexOutOfBoundsException{
-        Date d = new Date();
-
-        //if there is no time zone, we don't need to do any special parsing.
-        if(datestring.endsWith("Z")){
-            try{
-                SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");//spec for RFC3339
-                s.setTimeZone(TimeZone.getTimeZone("UTC"));
-                d = s.parse(datestring);
-            }
-            catch(java.text.ParseException pe){//try again with optional decimals
-                SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");//spec for RFC3339 (with fractional seconds)
-                s.setTimeZone(TimeZone.getTimeZone("UTC"));
-                s.setLenient(true);
-                d = s.parse(datestring);
-            }
-            return d;
-        }
-
-        //step one, split off the timezone.
-        String firstpart = datestring.substring(0,datestring.lastIndexOf('-'));
-        String secondpart = datestring.substring(datestring.lastIndexOf('-'));
-
-        //step two, remove the colon from the timezone offset
-        secondpart = secondpart.substring(0,secondpart.indexOf(':')) + secondpart.substring(secondpart.indexOf(':')+1);
-        datestring  = firstpart + secondpart;
-        SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");//spec for RFC3339
-        s.setTimeZone(TimeZone.getTimeZone("UTC"));
-        try{
-            d = s.parse(datestring);
-        }
-        catch(java.text.ParseException pe){//try again with optional decimals
-            s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");//spec for RFC3339 (with fractional seconds)
-            s.setTimeZone(TimeZone.getTimeZone("UTC"));
-            s.setLenient(true);
-            d = s.parse(datestring);
-        }
-        return d;
     }
 
     private void hideKeyboard() {

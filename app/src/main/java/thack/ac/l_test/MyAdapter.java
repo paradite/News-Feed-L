@@ -2,27 +2,19 @@ package thack.ac.l_test;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.provider.CalendarContract;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -120,13 +112,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         holder.mTextViewTitle.setText(item.getSource() + item.getUser());
         //Apply colors for different sources
-        if(item.getSource().equals(MainActivity.SOURCE_TWITTER)){
+        if(item.getSource().equals(Utils.SOURCE_TWITTER)){
             holder.mTextViewTitle.setTextColor(Color.parseColor("#0084B4"));
             holder.mCardView.setBackgroundColor(Color.parseColor("#330084B4"));
-        }else if(item.getSource().equals(MainActivity.SOURCE_PLUS)){
+        }else if(item.getSource().equals(Utils.SOURCE_PLUS)){
             holder.mTextViewTitle.setTextColor(Color.parseColor("#DD4B39"));
             holder.mCardView.setBackgroundColor(Color.parseColor("#33DD4B39"));
-        }else if(item.getSource().equals(MainActivity.SOURCE_INSTA)){
+        }else if(item.getSource().equals(Utils.SOURCE_INSTA)){
             holder.mTextViewTitle.setTextColor(Color.parseColor("#675144"));
             holder.mCardView.setBackgroundColor(Color.parseColor("#66675144"));
         }else{
