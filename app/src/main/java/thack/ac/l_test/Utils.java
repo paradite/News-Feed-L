@@ -21,12 +21,14 @@ import java.util.TimeZone;
  * Created by paradite on 30/9/14.
  */
 public class Utils {
-    public static final int MAX_COUNT = 10;
-    public static String SOURCE_PLUS = "+";
-    public static String SOURCE_TWITTER = "@";
-    public static String SOURCE_INSTA = "#";
+    public static final int    MAX_RESULTS_INSTA   = 10;
+    static final        int    MAX_RESULTS_TWITTER = 10;
+    static              int    MAX_RESULTS_PLUS    = 10;
+    public static       String SOURCE_PLUS         = "+";
+    public static       String SOURCE_TWITTER      = "@";
+    public static       String SOURCE_INSTA        = "#";
 
-    public static int randInt(int min , int max) {
+    public static int randInt(int min, int max) {
         Random rand = new Random();
         return rand.nextInt((max - min) + 1) + min;
     }
@@ -37,10 +39,10 @@ public class Utils {
             BitmapFactory.Options options = new BitmapFactory.Options();
 
             options.inSampleSize = compression;
-            Bitmap myBitmap = BitmapFactory.decodeStream (is, null, options);
-            Drawable d = new BitmapDrawable(Resources.getSystem(),myBitmap);
+            Bitmap myBitmap = BitmapFactory.decodeStream(is, null, options);
+            Drawable d = new BitmapDrawable(Resources.getSystem(), myBitmap);
             //Drawable d = Drawable.createFromStream(is, "src name");
-            Log.d("Converter: ", url + d.toString());
+            //Log.d("Converter: ", url + d.toString());
             return d;
         } catch (Exception e) {
             Log.d("Exception: ", e.toString());
@@ -113,5 +115,13 @@ public class Utils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    static String getStringSpaceAlphanumeric(String s) {
+        return s.replaceAll("[^\\w\\s]", "");
+    }
+
+    static String getStringAlphanumeric(String s) {
+        return s.replaceAll("[^\\w]", "");
     }
 }

@@ -7,10 +7,15 @@ Possible Names:
 + Social Monitor (the app monitors social media based on keywords)
 + What's going on (real time keyword tracking)
 + happening
++ SoSe - Social Search
++ Whatever
++ Feed
++ Track
 
 Features:
 ---
-+ Perform keyword search on social media sites without logging in
++ Real-time keyword tracking on social media sites
++ Completely anonymous (no log-in required)
 + Social media supported: Twitter, Google+, Instagram
 + Social media not yet supported: Facebook, etc
 
@@ -24,6 +29,7 @@ Techniques used:
 
 ### CardView
 + Used as container for each item in RecyclerView
++ Allow user to interact with the CardView by providing onClick methods and buttons
 + Dynamically added to show details of each tweet when user tap on the tweet.
 
 ### Twitter Integration

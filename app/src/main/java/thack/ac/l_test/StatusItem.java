@@ -16,16 +16,24 @@ public class StatusItem implements Comparable<StatusItem>{
     private String user;
     private String content;
     private String content_pic_url;
-
-
     private Date created_at;
-    private String profile_url;
+    private String location;
+
+
+    private String   profile_url;
     private Drawable profileDrawable;
     private Drawable contentDrawable;
-
-
     private URLEntity[] url_contained_twitter;
+    private String[] url_contained_plus;
+    private String source;
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
     public Drawable getContentDrawable() {
         return contentDrawable;
     }
@@ -33,6 +41,7 @@ public class StatusItem implements Comparable<StatusItem>{
     public void setContentDrawable(Drawable contentDrawable) {
         this.contentDrawable = contentDrawable;
     }
+
     public String getContent_pic_url() {
         return content_pic_url;
     }
@@ -40,6 +49,7 @@ public class StatusItem implements Comparable<StatusItem>{
     public void setContent_pic_url(String content_pic_url) {
         this.content_pic_url = content_pic_url;
     }
+
     public String[] getUrl_contained_plus() {
         return url_contained_plus;
     }
@@ -47,9 +57,6 @@ public class StatusItem implements Comparable<StatusItem>{
     public void setUrl_contained_plus(String[] url_contained_plus) {
         this.url_contained_plus = url_contained_plus;
     }
-
-    private String[] url_contained_plus;
-    private String source;
 
     public String getSource() {
         return source;

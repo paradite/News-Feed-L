@@ -1,5 +1,7 @@
 package thack.ac.l_test;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +23,7 @@ public class InstagramIntegration {
     public static final String CLIENTID = "bc83eecbf2094edfa177eb9db64f0d9b";
 
     public static String buildURL(String query){
-        return APIURL + "/tags/" + query + "/media/recent" + "?client_id=" + CLIENTID + "&count=" + Utils.MAX_COUNT;
+        return APIURL + "/tags/" + query + "/media/recent" + "?client_id=" + CLIENTID + "&count=" + Utils.MAX_RESULTS_INSTA;
     }
 
     /**
@@ -62,9 +64,17 @@ public class InstagramIntegration {
                 //Log.e(TAG, profile_picture);
                 StatusItem new_item = new StatusItem(username, caption, time, profile_picture, Utils.SOURCE_INSTA);
 
+                //Add addtional information
                 //Add image to the item, specific to Instagram
                 new_item.setContent_pic_url(imageUrlString);
-
+                //Add location
+                if(!jsonArray.getJSONObject(i).getString("location").equals("null")){
+                    JSONObject location = jsonArray.getJSONObject(i).getJSONObject("location");
+                    Log.e(TAG, location.toString());
+                    if(location.optString("name") != null && !location.optString("name").equals("")){
+                        new_item.setLocation(location.optString("name"));
+                    }
+                }
                 items.add(new_item);
             }
             return items;

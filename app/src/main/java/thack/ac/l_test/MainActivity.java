@@ -69,7 +69,6 @@ public class MainActivity extends Activity {
     private boolean INSTA_EXECUTED   = false;
 
     public               String DEFAULT_QUERY       = "Google Glass";
-    private static final int    MAX_RESULTS_TWITTER = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +131,9 @@ public class MainActivity extends Activity {
                 intent.putExtra("user", dataset.get(position).getUser());
                 intent.putExtra("content", dataset.get(position).getContent());
                 intent.putExtra("time", dataset.get(position).getExactTime());
+                if(dataset.get(position).getLocation() != null){
+                    intent.putExtra("location", dataset.get(position).getLocation());
+                }
                 //Url for twitter
                 if (dataset.get(position).getUrl_contained_twitter() != null && dataset.get(position).getUrl_contained_twitter().length > 0) {
                     intent.putExtra("url", dataset.get(position).getUrl_contained_twitter()[0].getText());
@@ -198,7 +200,7 @@ public class MainActivity extends Activity {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 Log.d(TAG, "Query word= " + s);
-                s = getStringAlphanumeric(s);
+                s = Utils.getStringAlphanumeric(s);
                 Log.d(TAG, "Validated word= " + s);
                 if (s.length() < 2) {
                     Toast.makeText(getApplicationContext(), "At least 2 letter please.", Toast.LENGTH_SHORT).show();
@@ -294,7 +296,7 @@ public class MainActivity extends Activity {
                 // gets Twitter instance with default credentials
                 User user = twitter.verifyCredentials();
                 Query query = new Query(strings[0]);
-                query.setCount(MAX_RESULTS_TWITTER);
+                query.setCount(Utils.MAX_RESULTS_TWITTER);
                 QueryResult result = twitter.search(query);
                 List<twitter4j.Status> statuses = result.getTweets();
 
@@ -303,11 +305,20 @@ public class MainActivity extends Activity {
                 for (twitter4j.Status s : statuses) {
                     //Log.d(TAG, "@" + s.getUser().getScreenName() + "\n" + s.getText());
                     StatusItem new_item = new StatusItem(s.getUser().getScreenName(), s.getText(), s.getCreatedAt(), s.getUser().getProfileImageURL(), Utils.SOURCE_TWITTER);
+                    //Add additional information
                     URLEntity urls[] = s.getURLEntities();
                     if (urls.length != 0) {
                         new_item.setUrl_contained_twitter(urls);
                     }
                     MediaEntity m[] = s.getMediaEntities();
+                    //Add location
+                    Log.e(TAG, "Twitter: ");
+
+                    if(s.getPlace() != null)Log.e(TAG, "place:"+s.getPlace().toString());
+                    if (s.getGeoLocation()!=null)Log.e(TAG, "geo:"+s.getGeoLocation().toString());
+                    if(s.getPlace() != null && s.getPlace().getName() != null){
+                        new_item.setLocation(s.getPlace().getName());
+                    }
                     dataset.add(new_item);
                     new DownloadImagesTask().execute(new_item);
                 }
@@ -363,14 +374,10 @@ public class MainActivity extends Activity {
 
     private void newGooglePlusFetch() {
         //Parse query for Google+
-        String clean_query = getStringSpaceAlphanumeric(query);
+        String clean_query = Utils.getStringSpaceAlphanumeric(query);
         if (!PLUS_EXECUTED) {
             new fetchSearchFromGooglePlus().execute(clean_query);
         }
-    }
-
-    private String getStringSpaceAlphanumeric(String s) {
-        return s.replaceAll("[^\\w\\s]", "");
     }
 
     /**
@@ -405,9 +412,22 @@ public class MainActivity extends Activity {
                     //Log.d(TAG, "\n" + parsed_date.toString());
 
                     StatusItem new_item = new StatusItem(a.getActor().getDisplayName(), a.getObject().getContent(), parsed_date, a.getActor().getImage().getUrl(), Utils.SOURCE_PLUS);
+                    //Additional information
                     String urls[] = {a.getUrl()};
                     if (urls.length != 0) {
                         new_item.setUrl_contained_plus(urls);
+                    }
+                    //Add location
+                    Log.e(TAG, "plus: ");
+                    if(a.getLocation() != null){
+                        String location = a.getLocation().getDisplayName();
+                        Log.e(TAG, "locat:"+location);
+                        new_item.setLocation(location);
+                    }
+                    if(a.getPlaceName() != null){
+                        String location = a.getPlaceName();
+                        Log.e(TAG, "place:"+location);
+                        new_item.setLocation(location);
                     }
                     //MediaEntity m[] = a.getMediaEntities();
                     dataset.add(new_item);
@@ -463,14 +483,10 @@ public class MainActivity extends Activity {
 
     private void newInstaFetch() {
         //Parse query more for Instagram (remove spaces)
-        String cleaner_query = getStringAlphanumeric(query);
+        String cleaner_query = Utils.getStringAlphanumeric(query);
         if (!INSTA_EXECUTED) {
             new fetchSearchFromInstagram().execute(cleaner_query);
         }
-    }
-
-    private String getStringAlphanumeric(String s) {
-        return s.replaceAll("[^\\w]", "");
     }
 
     /**

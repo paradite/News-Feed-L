@@ -49,6 +49,7 @@ public class DetailActivity extends Activity {
         //Parse the html elements
         Spanned content_spanned = Html.fromHtml(content);
         String time = getIntent().getExtras().getString("time");
+        String location = getIntent().getExtras().getString("location");
         String url = getIntent().getExtras().getString("url");
 
         //Set up the CardViews and add the CardViews to the content view
@@ -61,6 +62,10 @@ public class DetailActivity extends Activity {
         CardView timeCard = ViewHelper.setupCardView(this, new String[]{time});
         detailView.addView(timeCard);
 
+        if(location != null && !location.equals("")){
+            CardView locationCard = ViewHelper.setupCardView(this, new String[]{location});
+            detailView.addView(locationCard);
+        }
         //Separate URL CardView is not needed as the links in content view is clickable
         //if(url != null){
         //    CardView urlCard = ViewHelper.setupURLCardView(this, new String[]{url});

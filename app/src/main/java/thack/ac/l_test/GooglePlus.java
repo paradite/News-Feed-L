@@ -21,10 +21,8 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -58,7 +56,6 @@ public class GooglePlus {
             "AIzaSyDcxcfG5-6X-ouovEBKUoeFJ9e19445CTM";
 
     private static final String USER_ID = "116899029375914044550";
-    private static final int MAX_RESULTS = 10;
 
     static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static final JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -124,9 +121,6 @@ public class GooglePlus {
         if (feed.getActivities().isEmpty()) {
             Log.d("Google+:","No activities found.");
         } else {
-            //if (feed.getActivities().size() == MAX_RESULTS) {
-            //    System.out.print("First ");
-            //}
             Log.d("Google+:",feed.getActivities().size() + " activities found:");
             //for (Activity activity : feed.getActivities()) {
             //    Log.d("Google+:", "-----------------------------------------------");
@@ -147,27 +141,9 @@ public class GooglePlus {
                         request.setParser(new JsonObjectParser(JSON_FACTORY));
                     }
                 });
-        PlusUrl url = PlusUrl.listSearchResult(query).setMaxResults(MAX_RESULTS);
+        PlusUrl url = PlusUrl.listSearchResult(query).setMaxResults(Utils.MAX_RESULTS_PLUS);
         //url.put("fields", "items(id,url,object(content,plusoners/totalItems))");
         HttpRequest request = requestFactory.buildGetRequest(url);
         return parseResponse(request.execute());
     }
-
-    //public static void main(String[] args) {
-    //    if (API_KEY.startsWith("Enter ")) {
-    //        System.err.println(API_KEY);
-    //        System.exit(1);
-    //    }
-    //    try {
-    //        try {
-    //            newSearch();
-    //            return;
-    //        } catch (HttpResponseException e) {
-    //            System.err.println(e.getMessage());
-    //        }
-    //    } catch (Throwable t) {
-    //        t.printStackTrace();
-    //    }
-    //    System.exit(1);
-    //}
 }

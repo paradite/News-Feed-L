@@ -9,6 +9,7 @@
     <dimen name="remove_icon_size">50dp</dimen>
     <dimen name="remove_icon_padding">10dp</dimen>
     <dimen name="profile_pic_size">45dp</dimen>
+    <dimen name="inline_textview_separation">5dp</dimen>
 
     <!--Text Sizes-->
     <dimen name="name_text_size">18sp</dimen>

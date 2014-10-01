@@ -42,6 +42,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public TextView mTextViewContent;
         public ImageView mImageViewContentPic;
         public TextView mTextViewTime;
+        public TextView mTextViewLocation;
         public ImageView imgViewIcon;
         public ImageView imgViewRemoveIcon;
         public ViewHolder(View v) {
@@ -51,6 +52,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             mTextViewContent = (TextView) v.findViewById(R.id.item_content);
             mImageViewContentPic = (ImageView) v.findViewById(R.id.item_content_pic);
             mTextViewTime = (TextView) v.findViewById(R.id.item_time);
+            mTextViewLocation = (TextView) v.findViewById(R.id.item_location);
             imgViewIcon = (ImageView) v.findViewById(R.id.item_icon);
             imgViewRemoveIcon = (ImageView) v.findViewById(R.id.remove_icon);
 
@@ -110,6 +112,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         //Differentiate different sources
         //Reference: http://colour.charlottedann.com/ and http://stackoverflow.com/questions/15852122/hex-transparency-in-colors
 
+        //Set username and source
         holder.mTextViewTitle.setText(item.getSource() + item.getUser());
         //Apply colors for different sources
         if(item.getSource().equals(Utils.SOURCE_TWITTER)){
@@ -125,7 +128,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.mCardView.setBackgroundColor(Color.parseColor("#FFFAFAFA"));
         }
 
-        //Add content and timing to the textview
+        //Set content
         String content = item.getContent();
         //Parse the html elements
         Spanned content_spanned = Html.fromHtml(content);
@@ -133,7 +136,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         if(content_spanned.length() > 200){
             content_spanned = (Spanned)TextUtils.concat(content_spanned.subSequence(0, MAX_LENGTH_CONTENT), "...\n(Click to read more)");
         }
-        CharSequence timing = item.getDisplayTime();
         if(queried_term != null){
             //Format the queried term
             String clean_query = queried_term.replaceAll("[^\\w\\s]","");
@@ -152,8 +154,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }else {
             holder.mTextViewContent.setText(content);
         }
-
-        holder.mTextViewTime.setText(timing);
+        //Set the time
+        holder.mTextViewTime.setText(item.getDisplayTime());
+        //Set the location
+        if(item.getLocation() != null){
+            holder.mTextViewLocation.setText("at " + item.getLocation());
+        }else{
+            holder.mTextViewLocation.setText(null);
+        }
         //Set the img
         holder.imgViewIcon.setImageDrawable(item.getProfileDrawable());
         //Set content image (for Instagram)
