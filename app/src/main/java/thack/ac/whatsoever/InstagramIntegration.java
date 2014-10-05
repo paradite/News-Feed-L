@@ -9,7 +9,9 @@ import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -23,7 +25,13 @@ public class InstagramIntegration {
     public static final String CLIENTID = "bc83eecbf2094edfa177eb9db64f0d9b";
 
     public static String buildURL(String query){
-        return APIURL + "/tags/" + query + "/media/recent" + "?client_id=" + CLIENTID + "&count=" + Utils.MAX_RESULTS_INSTA;
+        try {
+            query = URLEncoder.encode(query, "UTF-8");
+            return APIURL + "/tags/" + query + "/media/recent" + "?client_id=" + CLIENTID + "&count=" + Utils.MAX_RESULTS_INSTA;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return APIURL + "/tags/" + query + "/media/recent" + "?client_id=" + CLIENTID + "&count=" + Utils.MAX_RESULTS_INSTA;
+        }
     }
 
     /**
