@@ -1,4 +1,4 @@
-package thack.ac.l_test;
+package thack.ac.whatsoever;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;

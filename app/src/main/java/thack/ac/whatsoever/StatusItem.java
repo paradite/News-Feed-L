@@ -1,4 +1,4 @@
-package thack.ac.l_test;
+package thack.ac.whatsoever;
 
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;

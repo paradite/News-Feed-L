@@ -1,4 +1,4 @@
-package thack.ac.l_test;
+package thack.ac.whatsoever;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.text.Html;
@@ -100,9 +102,20 @@ public class DetailActivity extends Activity {
             alert.setTitle(getResources().getString(R.string.action_about));
             String credit = getResources().getString(R.string.credit);
             ViewHelper.setDialogViewMessage(self, alert, credit);
-            alert.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
+            alert.setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     // Canceled.
+                }
+            });
+            alert.setPositiveButton("Go to Play Store", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
                 }
             });
             alert.setCancelable(true);

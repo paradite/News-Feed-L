@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="thack.ac.l_test"
+    package="thack.ac.whatsoever"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-sdk tools:node="replace" />
@@ -9,13 +9,13 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/happening_logo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <meta-data android:name="android.app.default_searchable"
                    android:value=".MainActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name="thack.ac.whatsoever.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop">
             <intent-filter>
@@ -29,9 +29,9 @@
                        android:resource="@xml/searchable"/>
         </activity>
         <activity
-            android:name=".DetailActivity"
+            android:name="thack.ac.whatsoever.DetailActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="thack.ac.whatsoever.MainActivity">
         </activity>
     </application>
 
