@@ -1,7 +1,15 @@
 App to search for keywords across different social media sites
 ===
 
-Possible Names:
+Final decision on App name:
+---
++ Whatsoever
+
+Links:
+---
++ <a href="https://play.google.com/store/apps/details?id=thack.ac.whatsoever" target="_blank">Play Store listing</a>
+
+App name candidates:
 ---
 + No Login (as the app only uses publicly accessible feeds)
 + Social Monitor (the app monitors social media based on keywords)
