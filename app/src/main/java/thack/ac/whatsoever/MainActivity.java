@@ -292,7 +292,7 @@ public class MainActivity extends Activity {
      * Async Task to make http call and sync with server
      * Twitter Async Task
      */
-    private class fetchSearchFromTwitter extends AsyncTask<String, Void, Void> {
+    private class fetchSearchFromTwitter extends AsyncTask<String, Integer, Void> {
         private ProgressDialog dialog;
 
         @Override
@@ -300,7 +300,9 @@ public class MainActivity extends Activity {
             super.onPreExecute();
             dialog = new ProgressDialog(self);
             this.dialog.setCanceledOnTouchOutside(false);
+            this.dialog.setMax(Utils.MAX_RESULTS_TWITTER);
             this.dialog.setMessage("Getting tweets...");
+            this.dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             this.dialog.show();
         }
 
@@ -319,6 +321,7 @@ public class MainActivity extends Activity {
                 query.setCount(Utils.MAX_RESULTS_TWITTER);
                 QueryResult result = twitter.search(query);
                 List<twitter4j.Status> statuses = result.getTweets();
+                publishProgress(statuses.size());
 
                 //Log.d(TAG, "Showing search results for " + strings[0] + ":");
                 //Add in new data to the data set
@@ -357,6 +360,7 @@ public class MainActivity extends Activity {
                                     .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
+                                            TWITTER_EXECUTED = false;
                                             newTwitterFetch();
                                         }
                                     })
@@ -370,6 +374,12 @@ public class MainActivity extends Activity {
             //Update async task tracker
             TWITTER_EXECUTED = true;
             return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            dialog.setProgress(values[0]);
         }
 
         @Override
@@ -467,6 +477,7 @@ public class MainActivity extends Activity {
                                     .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
+                                            PLUS_EXECUTED = false;
                                             newGooglePlusFetch();
                                         }
                                     })
@@ -543,6 +554,7 @@ public class MainActivity extends Activity {
                                     .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
+                                            INSTA_EXECUTED = false;
                                             newInstaFetch();
                                         }
                                     })
