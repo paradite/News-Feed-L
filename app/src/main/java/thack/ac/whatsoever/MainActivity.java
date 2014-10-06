@@ -24,6 +24,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -307,7 +309,13 @@ public class MainActivity extends Activity {
             try {
                 // gets Twitter instance with default credentials
                 User user = twitter.verifyCredentials();
-                Query query = new Query(strings[0]);
+                String query_word = strings[0];
+                try {
+                    query_word = URLEncoder.encode(query_word, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                Query query = new Query(query_word);
                 query.setCount(Utils.MAX_RESULTS_TWITTER);
                 QueryResult result = twitter.search(query);
                 List<twitter4j.Status> statuses = result.getTweets();

@@ -30,6 +30,8 @@ import com.google.api.client.util.Key;
 import com.google.api.services.plus.model.Activity;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -108,6 +110,11 @@ public class GooglePlus {
          * @return
          */
         public static PlusUrl listSearchResult(String query) {
+            try {
+                query = URLEncoder.encode(query, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             return new PlusUrl(
                     "https://www.googleapis.com/plus/v1/activities?query=" + query);
         }
