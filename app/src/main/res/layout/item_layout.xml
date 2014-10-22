@@ -16,6 +16,7 @@
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:id="@+id/card_wrapper"
             >
             <!-- icon -->
             <ImageView
@@ -97,18 +98,19 @@
                 android:layout_marginLeft="@dimen/text_img_in_card_margin"
                 android:layout_marginEnd="@dimen/user_title_margin"
                 android:layout_marginRight="@dimen/user_title_margin"
+                android:layout_marginBottom="@dimen/text_img_in_card_margin"
                 android:textSize="@dimen/content_text_size"
                 android:autoLink="all"
                 android:text="Content"/>
             <!-- Content Picture -->
             <ImageView
                 android:id="@+id/item_content_pic"
-                android:layout_width="500px"
-                android:layout_height="500px"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
                 android:layout_marginLeft="@dimen/text_img_in_card_margin"
                 android:layout_marginRight="@dimen/text_img_in_card_margin"
-                android:layout_marginTop="@dimen/text_img_in_card_margin"
-                android:layout_marginBottom="1dp"
+                android:layout_marginBottom="@dimen/text_img_in_card_margin"
                 android:contentDescription="picture"
                 android:layout_below="@id/item_content"
                 android:src="@drawable/ic_launcher"

@@ -54,7 +54,8 @@ public class InstagramIntegration {
             //Loop through and construct StatusItem
             for (int i = 0; i < jsonArray.length(); i++) {
                 //Log.e(TAG, jsonArray.getJSONObject(i).getJSONObject("caption").toString());
-                JSONObject imageJsonObject = jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("low_resolution");
+                //JSONObject imageJsonObject = jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("low_resolution");
+                JSONObject imageJsonObject = jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("standard_resolution");
                 String imageUrlString = imageJsonObject.getString("url");
                 JSONObject userJsonObject = jsonArray.getJSONObject(i).getJSONObject("user");
                 String username = userJsonObject.getString("username");

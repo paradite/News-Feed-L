@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +56,7 @@ public class MainActivity extends Activity {
     private CardView     mCardView;
     private ImageView    removeIconView;
     private TextView     titleView;
+    private ProgressBar  bar;
 
 
     private MyAdapter                  mAdapter;
@@ -71,7 +73,7 @@ public class MainActivity extends Activity {
     private boolean TWITTER_EXECUTED = false;
     private boolean INSTA_EXECUTED   = false;
 
-    public               String DEFAULT_QUERY       = "Google Glass";
+    public String DEFAULT_QUERY = "Google Glass";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,7 @@ public class MainActivity extends Activity {
 
         //Set up introduction card
         mCardView = (CardView) findViewById(R.id.card_view);
+        bar = (ProgressBar) this.findViewById(R.id.progressBar);
         removeIconView = (ImageView) mCardView.findViewById(R.id.remove_icon);
         titleView = (TextView) mCardView.findViewById(R.id.item_title);
         removeIconView.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +109,7 @@ public class MainActivity extends Activity {
 
         // improve performance if you know that changes in content
         // do not change the size of the RecyclerView
-        //mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
@@ -173,8 +176,9 @@ public class MainActivity extends Activity {
         newTwitterFetch();
 
         mCardView.setVisibility(View.VISIBLE);
+        bar.setVisibility(View.VISIBLE);
         if (titleView != null) {
-            titleView.setText("Search result for " + query + ":");
+            titleView.setText("Searching for " + query + "...");
         }
     }
 
@@ -293,17 +297,11 @@ public class MainActivity extends Activity {
      * Twitter Async Task
      */
     private class fetchSearchFromTwitter extends AsyncTask<String, Integer, Void> {
-        private ProgressDialog dialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog = new ProgressDialog(self);
-            this.dialog.setCanceledOnTouchOutside(false);
-            this.dialog.setMax(Utils.MAX_RESULTS_TWITTER);
-            this.dialog.setMessage("Getting tweets...");
-            this.dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            this.dialog.show();
+
         }
 
         @Override
@@ -321,8 +319,8 @@ public class MainActivity extends Activity {
                 query.setCount(Utils.MAX_RESULTS_TWITTER);
                 QueryResult result = twitter.search(query);
                 List<twitter4j.Status> statuses = result.getTweets();
-                publishProgress(statuses.size());
-
+                //publishProgress(statuses.size());
+                Log.d(TAG, "Showing " + statuses.size() + " Twitter search results for " + strings[0] + ":");
                 //Log.d(TAG, "Showing search results for " + strings[0] + ":");
                 //Add in new data to the data set
                 for (twitter4j.Status s : statuses) {
@@ -335,7 +333,7 @@ public class MainActivity extends Activity {
                     }
                     MediaEntity m[] = s.getMediaEntities();
                     //Add location
-                    Log.e(TAG, "Twitter: ");
+                    //Log.e(TAG, "Twitter: ");
 
                     if(s.getPlace() != null)Log.e(TAG, "place:"+s.getPlace().toString());
                     if (s.getGeoLocation()!=null)Log.e(TAG, "geo:"+s.getGeoLocation().toString());
@@ -377,25 +375,14 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            dialog.setProgress(values[0]);
-        }
-
-        @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            //mAdapter.setmDataset(dataset);
 
             //Update async task tracker
             TWITTER_EXECUTED = true;
 
             //Execute Google+
             newGooglePlusFetch();
-
 
             //Notify the adapter
             mAdapter.notifyDataSetChanged();
@@ -416,15 +403,10 @@ public class MainActivity extends Activity {
      * Google+ Async Task
      */
     private class fetchSearchFromGooglePlus extends AsyncTask<String, Void, Void> {
-        private ProgressDialog dialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog = new ProgressDialog(self);
-            this.dialog.setCanceledOnTouchOutside(false);
-            this.dialog.setMessage("Getting Google+ posts...");
-            this.dialog.show();
         }
 
         @Override
@@ -433,7 +415,7 @@ public class MainActivity extends Activity {
                 //Get response from Google+
                 List<com.google.api.services.plus.model.Activity> activities = GooglePlus.run(strings[0]);
 
-                //Log.d(TAG, "Showing search results for " + strings[0] + ":");
+                Log.d(TAG, "Showing " + activities.size() + "Plus search results for " + strings[0] + ":");
                 //Add in new data to the data set
                 for (com.google.api.services.plus.model.Activity a : activities) {
                     //Log.d(TAG, "@" + a.getActor().getDisplayName());
@@ -459,7 +441,12 @@ public class MainActivity extends Activity {
                         Log.e(TAG, "place:"+location);
                         new_item.setLocation(location);
                     }
-                    //MediaEntity m[] = a.getMediaEntities();
+                    //Add picture
+                    List<com.google.api.services.plus.model.Activity.PlusObject.Attachments> attachements = a.getObject().getAttachments();
+                    if(attachements != null && attachements.size() > 0 && attachements.get(0).getFullImage() != null){
+                        String picture_url = attachements.get(0).getFullImage().getUrl();
+                        new_item.setContent_pic_url(picture_url);
+                    }
                     dataset.add(new_item);
                     new DownloadImagesTask().execute(new_item);
                 }
@@ -496,10 +483,6 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            //mAdapter.setmDataset(dataset);
 
             //Update async task tracker
             PLUS_EXECUTED = true;
@@ -526,15 +509,10 @@ public class MainActivity extends Activity {
      * Instagram Async Task
      */
     private class fetchSearchFromInstagram extends AsyncTask<String, Void, Void> {
-        private ProgressDialog dialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog = new ProgressDialog(self);
-            this.dialog.setCanceledOnTouchOutside(false);
-            this.dialog.setMessage("Getting Instagram posts...");
-            this.dialog.show();
         }
 
         @Override
@@ -543,6 +521,7 @@ public class MainActivity extends Activity {
             ArrayList<StatusItem> items = null;
             try {
                 items = InstagramIntegration.newSearch(strings[0]);
+                Log.d(TAG, "Showing Instagram search results for " + strings[0] + ":");
             } catch (Exception e) {
                 e.printStackTrace();
                 if (!INSTA_EXECUTED) {
@@ -568,7 +547,7 @@ public class MainActivity extends Activity {
                 INSTA_EXECUTED = true;
             }
             if (items == null) return null;
-            Log.d(TAG, "Showing Instagram search results for " + strings[0] + ":");
+            Log.d(TAG, "Showing " + items.size() + "Instagram search results for " + strings[0] + ":");
             //Add in new data to the data set
             for (StatusItem item : items) {
                 //Log.d(TAG, "@" + item.getUser());
@@ -591,18 +570,24 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            //mAdapter.setmDataset(dataset);
 
             //Update async task tracker
             INSTA_EXECUTED = true;
-
+            tryDismissBar();
             //Finished all text, then do image fetching
             //new DownloadAllImagesTask().execute(dataset);
             //Notify the adapter
             mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Try to dismiss the progress bar after fetching all the data
+     */
+    private void tryDismissBar() {
+        if(TWITTER_EXECUTED && PLUS_EXECUTED && INSTA_EXECUTED){
+            mCardView.setVisibility(View.GONE);
+            Toast.makeText(getApplicationContext(), "Search completed.", Toast.LENGTH_SHORT).show();
         }
     }
 

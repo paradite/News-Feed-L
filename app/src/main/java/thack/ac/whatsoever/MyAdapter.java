@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -45,9 +46,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public TextView mTextViewLocation;
         public ImageView imgViewIcon;
         public ImageView imgViewRemoveIcon;
+        public RelativeLayout mCardViewWrapper;
         public ViewHolder(View v) {
             super(v);
             mCardView = (CardView) v.findViewById(R.id.card_view);
+            mCardViewWrapper = (RelativeLayout) v.findViewById(R.id.card_wrapper);
             mTextViewTitle = (TextView) v.findViewById(R.id.item_title);
             mTextViewContent = (TextView) v.findViewById(R.id.item_content);
             mImageViewContentPic = (ImageView) v.findViewById(R.id.item_content_pic);
@@ -117,15 +120,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         //Apply colors for different sources
         if(item.getSource().equals(Utils.SOURCE_TWITTER)){
             holder.mTextViewTitle.setTextColor(Color.parseColor("#0084B4"));
-            holder.mCardView.setBackgroundColor(Color.parseColor("#330084B4"));
+            holder.mCardViewWrapper.setBackgroundColor(Color.parseColor("#330084B4"));
         }else if(item.getSource().equals(Utils.SOURCE_PLUS)){
             holder.mTextViewTitle.setTextColor(Color.parseColor("#DD4B39"));
-            holder.mCardView.setBackgroundColor(Color.parseColor("#33DD4B39"));
+            holder.mCardViewWrapper.setBackgroundColor(Color.parseColor("#33DD4B39"));
         }else if(item.getSource().equals(Utils.SOURCE_INSTA)){
             holder.mTextViewTitle.setTextColor(Color.parseColor("#675144"));
-            holder.mCardView.setBackgroundColor(Color.parseColor("#66675144"));
+            holder.mCardViewWrapper.setBackgroundColor(Color.parseColor("#66675144"));
         }else{
-            holder.mCardView.setBackgroundColor(Color.parseColor("#FFFAFAFA"));
+            holder.mCardViewWrapper.setBackgroundColor(Color.parseColor("#FFFAFAFA"));
         }
 
         //Set content

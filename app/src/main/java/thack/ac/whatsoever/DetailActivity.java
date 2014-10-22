@@ -55,19 +55,24 @@ public class DetailActivity extends Activity {
         String url = getIntent().getExtras().getString("url");
 
         //Set up the CardViews and add the CardViews to the content view
+        //Add source
         CardView sourceCard = ViewHelper.setupCardView(this, new String[]{source});
         detailView.addView(sourceCard);
+        //Add user
         CardView userCard = ViewHelper.setupCardView(this, new String[]{user});
         detailView.addView(userCard);
-        CardView contentCard = ViewHelper.setupCardView(this, new CharSequence[]{content_spanned});
-        detailView.addView(contentCard);
+        //Add time
         CardView timeCard = ViewHelper.setupCardView(this, new String[]{time});
         detailView.addView(timeCard);
-
+        //Add location
         if(location != null && !location.equals("")){
             CardView locationCard = ViewHelper.setupCardView(this, new String[]{location});
             detailView.addView(locationCard);
         }
+        //Add content
+        CardView contentCard = ViewHelper.setupCardView(this, new CharSequence[]{content_spanned});
+        detailView.addView(contentCard);
+
         //Separate URL CardView is not needed as the links in content view is clickable
         //if(url != null){
         //    CardView urlCard = ViewHelper.setupURLCardView(this, new String[]{url});
