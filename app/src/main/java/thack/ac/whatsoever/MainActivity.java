@@ -2,7 +2,6 @@ package thack.ac.whatsoever;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -70,11 +69,11 @@ public class MainActivity extends Activity {
     Twitter        twitter;
 
     //Boolean to track if each async task has been executed
-    private boolean PLUS_EXECUTED    = false;
-    private boolean TWITTER_EXECUTED = false;
-    private boolean INSTA_EXECUTED   = false;
-    //Track number of pictures still loading
-    private int loading_pic = 0;
+    private boolean PLUS_EXECUTED      = false;
+    private boolean TWITTER_EXECUTED   = false;
+    private boolean INSTA_EXECUTED     = false;
+    //Track number of pictures still need to be downloaded
+    private int     pic_download_tasks = 0;
 
     public String DEFAULT_QUERY = "Google Glass";
 
@@ -176,8 +175,8 @@ public class MainActivity extends Activity {
         PLUS_EXECUTED = false;
         TWITTER_EXECUTED = false;
         INSTA_EXECUTED = false;
-        //Reset the number of pictures still loading
-        loading_pic = 0;
+        //Recalculate the number of picture download tasks
+        pic_download_tasks = Utils.MAX_RESULTS_TOTAL;
 
         //Start fetching from sources
         newTwitterFetch();
@@ -348,8 +347,8 @@ public class MainActivity extends Activity {
                     //Add location
                     //Log.e(TAG, "Twitter: ");
 
-                    if(s.getPlace() != null)Log.e(TAG, "place:"+s.getPlace().toString());
-                    if (s.getGeoLocation()!=null)Log.e(TAG, "geo:"+s.getGeoLocation().toString());
+                    //if(s.getPlace() != null)Log.e(TAG, "place:"+s.getPlace().toString());
+                    //if (s.getGeoLocation()!=null)Log.e(TAG, "geo:"+s.getGeoLocation().toString());
                     if(s.getPlace() != null && s.getPlace().getName() != null){
                         new_item.setLocation(s.getPlace().getName());
                     }
@@ -419,7 +418,7 @@ public class MainActivity extends Activity {
                 //Get response from Google+
                 List<com.google.api.services.plus.model.Activity> activities = GooglePlus.run(strings[0]);
 
-                Log.d(TAG, "Showing " + activities.size() + "Plus search results for " + strings[0] + ":");
+                //Log.d(TAG, "Showing " + activities.size() + "Plus search results for " + strings[0] + ":");
                 //Add in new data to the data set
                 for (com.google.api.services.plus.model.Activity a : activities) {
                     //Log.d(TAG, "@" + a.getActor().getDisplayName());
@@ -434,15 +433,15 @@ public class MainActivity extends Activity {
                         new_item.setUrl_contained_plus(urls);
                     }
                     //Add location
-                    Log.e(TAG, "plus: ");
+                    //Log.e(TAG, "plus: ");
                     if(a.getLocation() != null){
                         String location = a.getLocation().getDisplayName();
-                        Log.e(TAG, "locat:"+location);
+                        //Log.e(TAG, "locat:"+location);
                         new_item.setLocation(location);
                     }
                     if(a.getPlaceName() != null){
                         String location = a.getPlaceName();
-                        Log.e(TAG, "place:"+location);
+                        //Log.e(TAG, "place:"+location);
                         new_item.setLocation(location);
                     }
                     //Add picture
@@ -574,9 +573,9 @@ public class MainActivity extends Activity {
      */
     private void tryDismissBar() {
         if(TWITTER_EXECUTED && PLUS_EXECUTED && INSTA_EXECUTED){
-            if(loading_pic > 0){
+            if(pic_download_tasks > 0){
                 if (titleView != null) {
-                    titleView.setText("Loading pictures...");
+                    titleView.setText("Loading pictures in " + pic_download_tasks + " posts...");
                 }
             }else if(mCardView.getVisibility() != View.GONE){
                 mCardView.setVisibility(View.GONE);
@@ -615,16 +614,13 @@ public class MainActivity extends Activity {
 
         @Override
         protected Void doInBackground(StatusItem... statusItems) {
+            Log.e(TAG, "DownloadImagesTask: ");
             String profile_url = statusItems[0].getProfile_url();
             String pic_url = statusItems[0].getContent_pic_url();
-            loading_pic++;
             statusItems[0].setProfileDrawable(Utils.LoadImageFromWebOperations(profile_url, 1));
-            loading_pic--;
             if (pic_url != null) {
                 //Log.e(TAG, statusItems[0].getSource() + statusItems[0].getUser() + ": " + pic_url);
-                loading_pic++;
                 statusItems[0].setContentDrawable(Utils.LoadImageFromWebOperations(pic_url, 2));
-                loading_pic--;
             }
             return null;
         }
@@ -636,6 +632,8 @@ public class MainActivity extends Activity {
                     mAdapter.notifyDataSetChanged();
                 }
             });
+            pic_download_tasks--;
+            Log.e(TAG, "pic: " + pic_download_tasks);
             tryDismissBar();
         }
     }

@@ -22,8 +22,9 @@ import java.util.TimeZone;
  */
 public class Utils {
     public static final int    MAX_RESULTS_INSTA   = 10;
-    static final        int    MAX_RESULTS_TWITTER = 10;
-    static              int    MAX_RESULTS_PLUS    = 10;
+    public static final int    MAX_RESULTS_TWITTER = 10;
+    public static final int    MAX_RESULTS_PLUS    = 10;
+    public static final int    MAX_RESULTS_TOTAL   = MAX_RESULTS_INSTA + MAX_RESULTS_TWITTER + MAX_RESULTS_PLUS;
     public static       String SOURCE_PLUS         = "+";
     public static       String SOURCE_TWITTER      = "@";
     public static       String SOURCE_INSTA        = "#";

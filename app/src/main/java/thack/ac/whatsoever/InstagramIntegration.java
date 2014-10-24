@@ -79,7 +79,7 @@ public class InstagramIntegration {
                 //Add location
                 if(!jsonArray.getJSONObject(i).getString("location").equals("null")){
                     JSONObject location = jsonArray.getJSONObject(i).getJSONObject("location");
-                    Log.e(TAG, location.toString());
+                    //Log.e(TAG, location.toString());
                     if(location.optString("name") != null && !location.optString("name").equals("")){
                         new_item.setLocation(location.optString("name"));
                     }
