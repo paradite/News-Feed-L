@@ -30,8 +30,22 @@
                 android:layout_marginTop="@dimen/text_img_in_card_margin"
                 android:layout_marginBottom="1dp"
                 android:contentDescription="icon"
+                android:visibility="invisible"
                 android:src="@drawable/ic_launcher"
                 />
+            <ProgressBar
+                android:id="@+id/progressBarProfilePic"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="@dimen/profile_pic_size"
+                android:layout_height="@dimen/profile_pic_size"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/text_img_in_card_margin"
+                android:layout_marginRight="@dimen/text_img_in_card_margin"
+                android:layout_marginTop="@dimen/text_img_in_card_margin"
+                android:layout_marginBottom="1dp"
+                android:visibility="visible" >
+            </ProgressBar>
             <ImageView
                 android:id="@+id/remove_icon"
                 android:layout_width="@dimen/remove_icon_size"
@@ -111,12 +125,25 @@
                 android:layout_marginLeft="@dimen/text_img_in_card_margin"
                 android:layout_marginRight="@dimen/text_img_in_card_margin"
                 android:layout_marginBottom="@dimen/text_img_in_card_margin"
-                android:contentDescription="picture"
                 android:layout_below="@id/item_content"
-                android:src="@drawable/ic_launcher"
-                android:visibility="visible"
+                android:visibility="invisible"
                 android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_launcher"
+                android:contentDescription="picture"
                 />
+            <ProgressBar
+                android:id="@+id/progressBarPicture"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:layout_marginLeft="@dimen/text_img_in_card_margin"
+                android:layout_marginRight="@dimen/text_img_in_card_margin"
+                android:layout_marginBottom="@dimen/text_img_in_card_margin"
+                android:layout_below="@id/item_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="visible" >
+            </ProgressBar>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

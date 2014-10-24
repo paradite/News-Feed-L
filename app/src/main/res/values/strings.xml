@@ -2,7 +2,14 @@
 <resources>
 
     <string name="app_name">Whatsoever</string>
-    <string name="hello_world">Search to see what\'s happening!</string>
+    <string name="hello_world">Search whatsoever!\n</string>
+    <string name="suggestions">
+        Examples:\n
+        (hot topics) XXX disease, XXX election…\n
+        (places) New York, London, Singapore…\n
+        (products) iPhone, XXX car, XXX bag…\n
+        (activities) Yoga, night cycling…\n
+    </string>
     <string name="credit">This app allows you to search across different social media.
         \nBlue - Status from Twitter
         \nRed - Post from Google+

@@ -56,6 +56,7 @@ public class MainActivity extends Activity {
     private CardView     mCardView;
     private ImageView    removeIconView;
     private TextView     titleView;
+    private TextView     suggestionsView;
     private ProgressBar  bar;
 
 
@@ -72,6 +73,8 @@ public class MainActivity extends Activity {
     private boolean PLUS_EXECUTED    = false;
     private boolean TWITTER_EXECUTED = false;
     private boolean INSTA_EXECUTED   = false;
+    //Track number of pictures still loading
+    private int loading_pic = 0;
 
     public String DEFAULT_QUERY = "Google Glass";
 
@@ -85,6 +88,7 @@ public class MainActivity extends Activity {
         bar = (ProgressBar) this.findViewById(R.id.progressBar);
         removeIconView = (ImageView) mCardView.findViewById(R.id.remove_icon);
         titleView = (TextView) mCardView.findViewById(R.id.item_title);
+        suggestionsView = (TextView) mCardView.findViewById(R.id.item_content);
         removeIconView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,6 +137,7 @@ public class MainActivity extends Activity {
                 // do something with position
                 Intent intent = new Intent();
                 intent.putExtra("pos", position);
+                //intent.putExtra("StatusItem", dataset.get(position));
                 intent.putExtra("source", dataset.get(position).getSource());
                 intent.putExtra("user", dataset.get(position).getUser());
                 intent.putExtra("content", dataset.get(position).getContent());
@@ -140,14 +145,14 @@ public class MainActivity extends Activity {
                 if(dataset.get(position).getLocation() != null){
                     intent.putExtra("location", dataset.get(position).getLocation());
                 }
-                //Url for twitter
-                if (dataset.get(position).getUrl_contained_twitter() != null && dataset.get(position).getUrl_contained_twitter().length > 0) {
-                    intent.putExtra("url", dataset.get(position).getUrl_contained_twitter()[0].getText());
-                }
-                //Url for Google+
-                if (dataset.get(position).getUrl_contained_plus() != null && dataset.get(position).getUrl_contained_plus().length > 0) {
-                    intent.putExtra("url", dataset.get(position).getUrl_contained_plus()[0]);
-                }
+                ////Url for twitter
+                //if (dataset.get(position).getUrl_contained_twitter() != null && dataset.get(position).getUrl_contained_twitter().length > 0) {
+                //    intent.putExtra("url", dataset.get(position).getUrl_contained_twitter()[0].getText());
+                //}
+                ////Url for Google+
+                //if (dataset.get(position).getUrl_contained_plus() != null && dataset.get(position).getUrl_contained_plus().length > 0) {
+                //    intent.putExtra("url", dataset.get(position).getUrl_contained_plus()[0]);
+                //}
                 intent.setClass(self, DetailActivity.class);
                 startActivity(intent);
             }
@@ -171,11 +176,16 @@ public class MainActivity extends Activity {
         PLUS_EXECUTED = false;
         TWITTER_EXECUTED = false;
         INSTA_EXECUTED = false;
+        //Reset the number of pictures still loading
+        loading_pic = 0;
 
         //Start fetching from sources
         newTwitterFetch();
+        newGooglePlusFetch();
+        newInstaFetch();
 
         mCardView.setVisibility(View.VISIBLE);
+        suggestionsView.setVisibility(View.GONE);
         bar.setVisibility(View.VISIBLE);
         if (titleView != null) {
             titleView.setText("Searching for " + query + "...");
@@ -185,6 +195,9 @@ public class MainActivity extends Activity {
     private void newTwitterFetch() {
         //Execute twitter first, start others at the end of twitter
         if (!TWITTER_EXECUTED) {
+
+            //Update async task tracker to prevent running task twice
+            TWITTER_EXECUTED = true;
             new fetchSearchFromTwitter().execute(query);
         }
     }
@@ -348,41 +361,30 @@ public class MainActivity extends Activity {
                 Collections.sort(dataset);
             } catch (TwitterException te) {
                 te.printStackTrace();
-
-                if (!TWITTER_EXECUTED) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new AlertDialog.Builder(self)
-                                    .setMessage("Error occurred when getting the tweets")
-                                    .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            TWITTER_EXECUTED = false;
-                                            newTwitterFetch();
-                                        }
-                                    })
-                                    .setNegativeButton("Cancel", null)
-                                    .setCancelable(true)
-                                    .show();
-                        }
-                    });
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(self)
+                                .setMessage("Error occurred when getting the tweets")
+                                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        TWITTER_EXECUTED = false;
+                                        newTwitterFetch();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .setCancelable(true)
+                                .show();
+                    }
+                });
             }
-            //Update async task tracker
-            TWITTER_EXECUTED = true;
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-
-            //Update async task tracker
-            TWITTER_EXECUTED = true;
-
-            //Execute Google+
-            newGooglePlusFetch();
 
             //Notify the adapter
             mAdapter.notifyDataSetChanged();
@@ -393,6 +395,8 @@ public class MainActivity extends Activity {
         //Parse query for Google+
         String clean_query = Utils.getStringSpaceAlphanumeric(query);
         if (!PLUS_EXECUTED) {
+            //Update async task tracker to prevent running task twice
+            PLUS_EXECUTED = true;
             new fetchSearchFromGooglePlus().execute(clean_query);
         }
     }
@@ -455,40 +459,30 @@ public class MainActivity extends Activity {
                 Collections.sort(dataset);
             } catch (Exception e) {
                 e.printStackTrace();
-                if (!PLUS_EXECUTED) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new AlertDialog.Builder(self)
-                                    .setMessage("Error occurred when getting the Google+ posts")
-                                    .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            PLUS_EXECUTED = false;
-                                            newGooglePlusFetch();
-                                        }
-                                    })
-                                    .setNegativeButton("Cancel", null)
-                                    .setCancelable(true)
-                                    .show();
-                        }
-                    });
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(self)
+                                .setMessage("Error occurred when getting the Google+ posts")
+                                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        PLUS_EXECUTED = false;
+                                        newGooglePlusFetch();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .setCancelable(true)
+                                .show();
+                    }
+                });
             }
-            //Update async task tracker
-            PLUS_EXECUTED = true;
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-
-            //Update async task tracker
-            PLUS_EXECUTED = true;
-
-            //Start Instagram fetch
-            newInstaFetch();
 
             //Notify the adapter
             mAdapter.notifyDataSetChanged();
@@ -499,6 +493,8 @@ public class MainActivity extends Activity {
         //Parse query more for Instagram (remove spaces)
         String cleaner_query = Utils.getStringAlphanumeric(query);
         if (!INSTA_EXECUTED) {
+            //Update async task tracker to prevent running task twice
+            INSTA_EXECUTED = true;
             new fetchSearchFromInstagram().execute(cleaner_query);
         }
     }
@@ -524,27 +520,23 @@ public class MainActivity extends Activity {
                 Log.d(TAG, "Showing Instagram search results for " + strings[0] + ":");
             } catch (Exception e) {
                 e.printStackTrace();
-                if (!INSTA_EXECUTED) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new AlertDialog.Builder(self)
-                                    .setMessage("Error occurred when getting the Instagram posts")
-                                    .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            INSTA_EXECUTED = false;
-                                            newInstaFetch();
-                                        }
-                                    })
-                                    .setNegativeButton("Cancel", null)
-                                    .setCancelable(true)
-                                    .show();
-                        }
-                    });
-                }
-                //Update async task tracker
-                INSTA_EXECUTED = true;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(self)
+                                .setMessage("Error occurred when getting the Instagram posts")
+                                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        INSTA_EXECUTED = false;
+                                        newInstaFetch();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .setCancelable(true)
+                                .show();
+                    }
+                });
             }
             if (items == null) return null;
             Log.d(TAG, "Showing " + items.size() + "Instagram search results for " + strings[0] + ":");
@@ -570,12 +562,8 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-
-            //Update async task tracker
-            INSTA_EXECUTED = true;
             tryDismissBar();
-            //Finished all text, then do image fetching
-            //new DownloadAllImagesTask().execute(dataset);
+
             //Notify the adapter
             mAdapter.notifyDataSetChanged();
         }
@@ -586,8 +574,14 @@ public class MainActivity extends Activity {
      */
     private void tryDismissBar() {
         if(TWITTER_EXECUTED && PLUS_EXECUTED && INSTA_EXECUTED){
-            mCardView.setVisibility(View.GONE);
-            Toast.makeText(getApplicationContext(), "Search completed.", Toast.LENGTH_SHORT).show();
+            if(loading_pic > 0){
+                if (titleView != null) {
+                    titleView.setText("Loading pictures...");
+                }
+            }else if(mCardView.getVisibility() != View.GONE){
+                mCardView.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "Search completed.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -623,10 +617,14 @@ public class MainActivity extends Activity {
         protected Void doInBackground(StatusItem... statusItems) {
             String profile_url = statusItems[0].getProfile_url();
             String pic_url = statusItems[0].getContent_pic_url();
+            loading_pic++;
             statusItems[0].setProfileDrawable(Utils.LoadImageFromWebOperations(profile_url, 1));
+            loading_pic--;
             if (pic_url != null) {
                 //Log.e(TAG, statusItems[0].getSource() + statusItems[0].getUser() + ": " + pic_url);
+                loading_pic++;
                 statusItems[0].setContentDrawable(Utils.LoadImageFromWebOperations(pic_url, 2));
+                loading_pic--;
             }
             return null;
         }
@@ -638,6 +636,7 @@ public class MainActivity extends Activity {
                     mAdapter.notifyDataSetChanged();
                 }
             });
+            tryDismissBar();
         }
     }
 

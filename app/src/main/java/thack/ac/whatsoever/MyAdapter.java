@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -38,15 +39,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     // Provide a reference to the type of views that you are using
     // (custom viewholder)
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public CardView mCardView;
-        public TextView mTextViewTitle;
-        public TextView mTextViewContent;
-        public ImageView mImageViewContentPic;
-        public TextView mTextViewTime;
-        public TextView mTextViewLocation;
-        public ImageView imgViewIcon;
-        public ImageView imgViewRemoveIcon;
+        public CardView       mCardView;
+        public TextView       mTextViewTitle;
+        public TextView       mTextViewContent;
+        public ImageView      mImageViewContentPic;
+        public TextView       mTextViewTime;
+        public TextView       mTextViewLocation;
+        public ImageView      imgViewIcon;
+        public ImageView      imgViewRemoveIcon;
         public RelativeLayout mCardViewWrapper;
+        public ProgressBar    mProfileProgress;
+        public ProgressBar    mPictureProgress;
+
         public ViewHolder(View v) {
             super(v);
             mCardView = (CardView) v.findViewById(R.id.card_view);
@@ -58,6 +62,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             mTextViewLocation = (TextView) v.findViewById(R.id.item_location);
             imgViewIcon = (ImageView) v.findViewById(R.id.item_icon);
             imgViewRemoveIcon = (ImageView) v.findViewById(R.id.remove_icon);
+            mProfileProgress = (ProgressBar) v.findViewById(R.id.progressBarProfilePic);
+            mPictureProgress = (ProgressBar) v.findViewById(R.id.progressBarPicture);
 
             mTextViewContent.setOnClickListener(this);
             imgViewRemoveIcon.setOnClickListener(this);
@@ -165,21 +171,33 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }else{
             holder.mTextViewLocation.setText(null);
         }
-        //Set the img
-        holder.imgViewIcon.setImageDrawable(item.getProfileDrawable());
-        //Set content image (for Instagram)
-        holder.mImageViewContentPic.setImageDrawable(item.getContentDrawable());
 
-        holder.mImageViewContentPic.setVisibility(View.VISIBLE);
-        if(item.getContentDrawable() == null){
-            holder.mImageViewContentPic.setVisibility(View.GONE);
+        //Set the profile pic
+        //Assume image is loading, show default loading progress
+        //If it does not have image, hide the view
+        if(item.getProfile_url() == null || item.getProfile_url().isEmpty()){
+            holder.imgViewIcon.setVisibility(View.GONE);
+            holder.mProfileProgress.setVisibility(View.GONE);
+        }else if(item.getProfileDrawable() != null){
+            //Loaded image when ready
+            holder.imgViewIcon.setImageDrawable(item.getProfileDrawable());
+            holder.mProfileProgress.setVisibility(View.GONE);
+            holder.imgViewIcon.setVisibility(View.VISIBLE);
         }
-        //if(item.getContentDrawable() == null){
-        //    holder.mImageViewContentPic.setVisibility(View.INVISIBLE);
-        //}
+
+        //Set content image (for Instagram)
+        //Assume image is loading, show default loading progress
+        //If it does not have image, hide both the view and the progress
+        if(item.getContent_pic_url() == null || item.getContent_pic_url().isEmpty()){
+            holder.mImageViewContentPic.setVisibility(View.GONE);
+            holder.mPictureProgress.setVisibility(View.GONE);
+        }else if(item.getContentDrawable() != null){
+            //Loaded image when ready
+            holder.mImageViewContentPic.setImageDrawable(item.getContentDrawable());
+            holder.mPictureProgress.setVisibility(View.GONE);
+            holder.mImageViewContentPic.setVisibility(View.VISIBLE);
+        }
     }
-
-
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override

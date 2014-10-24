@@ -34,8 +34,11 @@ public class DetailActivity extends Activity {
 
         //Get the index from the previous activity
         int position = getIntent().getExtras().getInt("pos");
+        //StatusItem item = (StatusItem) getIntent().getSerializableExtra("StatusItem");
         String user = getIntent().getExtras().getString("user");
         String source = getIntent().getExtras().getString("source");
+        //String user = item.getUser();
+        //String source = item.getSource();
         //Parse the source
         if(source.equals(Utils.SOURCE_TWITTER)){
             source = getResources().getString(R.string.source_twitter);
@@ -48,11 +51,15 @@ public class DetailActivity extends Activity {
         }
 
         String content = getIntent().getExtras().getString("content");
+        //String content = item.getContent();
         //Parse the html elements
         Spanned content_spanned = Html.fromHtml(content);
+
         String time = getIntent().getExtras().getString("time");
         String location = getIntent().getExtras().getString("location");
-        String url = getIntent().getExtras().getString("url");
+        //String url = getIntent().getExtras().getString("url");
+        //String time = item.getExactTime();
+        //String location = item.getLocation();
 
         //Set up the CardViews and add the CardViews to the content view
         //Add source

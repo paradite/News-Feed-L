@@ -67,14 +67,14 @@
             <!-- Content -->
             <TextView
                 android:id="@+id/item_content"
+                android:text="@string/suggestions"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/item_title"
                 android:layout_marginLeft="@dimen/text_img_in_card_margin"
                 android:layout_marginRight="@dimen/text_img_in_card_margin"
-                android:layout_marginBottom="@dimen/text_img_in_card_margin"
                 android:textSize="16sp"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyle"

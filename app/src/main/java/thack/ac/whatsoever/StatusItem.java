@@ -3,6 +3,7 @@ package thack.ac.whatsoever;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
 
+import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,7 +13,7 @@ import twitter4j.URLEntity;
 /**
  * Created by paradite on 23/9/14.
  */
-public class StatusItem implements Comparable<StatusItem>{
+public class StatusItem implements Comparable<StatusItem>, Serializable {
     private String user;
     private String content;
     private String content_pic_url;
