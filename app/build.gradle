@@ -8,8 +8,8 @@ android {
         applicationId "thack.ac.whatsoever"
         minSdkVersion 15
         targetSdkVersion 20
-        versionCode 4
-        versionName "1.021"
+        versionCode 5
+        versionName "1.022"
     }
     buildTypes {
         release {
