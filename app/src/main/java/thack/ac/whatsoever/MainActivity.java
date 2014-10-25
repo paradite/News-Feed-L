@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import twitter4j.MediaEntity;
 import twitter4j.Query;
@@ -197,7 +198,7 @@ public class MainActivity extends Activity {
 
             //Update async task tracker to prevent running task twice
             TWITTER_EXECUTED = true;
-            new fetchSearchFromTwitter().execute(query);
+            new fetchSearchFromTwitter().executeOnExecutor(fetchSearchFromTwitter.THREAD_POOL_EXECUTOR, query);
         }
     }
 
@@ -354,7 +355,7 @@ public class MainActivity extends Activity {
                     }
                     dataset.add(new_item);
                     int pos = dataset.indexOf(new_item);
-                    new DownloadImagesTask(pos, mAdapter, MainActivity.this).executeOnExecutor(THREAD_POOL_EXECUTOR, new_item);
+                    new DownloadImagesTask(pos, mAdapter, MainActivity.this).executeOnExecutor(DownloadImagesTask.THREAD_POOL_EXECUTOR, new_item);
                 }
 
             } catch (TwitterException te) {
@@ -395,7 +396,7 @@ public class MainActivity extends Activity {
         if (!PLUS_EXECUTED) {
             //Update async task tracker to prevent running task twice
             PLUS_EXECUTED = true;
-            new fetchSearchFromGooglePlus().execute(clean_query);
+            new fetchSearchFromGooglePlus().executeOnExecutor(fetchSearchFromGooglePlus.THREAD_POOL_EXECUTOR, clean_query);
         }
     }
 
@@ -451,7 +452,7 @@ public class MainActivity extends Activity {
                     }
                     dataset.add(new_item);
                     int pos = dataset.indexOf(new_item);
-                    new DownloadImagesTask(pos, mAdapter, MainActivity.this).executeOnExecutor(THREAD_POOL_EXECUTOR, new_item);
+                    new DownloadImagesTask(pos, mAdapter, MainActivity.this).executeOnExecutor(DownloadImagesTask.THREAD_POOL_EXECUTOR, new_item);
                 }
 
             } catch (Exception e) {
@@ -492,7 +493,7 @@ public class MainActivity extends Activity {
         if (!INSTA_EXECUTED) {
             //Update async task tracker to prevent running task twice
             INSTA_EXECUTED = true;
-            new fetchSearchFromInstagram().execute(cleaner_query);
+            new fetchSearchFromInstagram().executeOnExecutor(fetchSearchFromInstagram.THREAD_POOL_EXECUTOR, cleaner_query);
         }
     }
 
@@ -549,7 +550,7 @@ public class MainActivity extends Activity {
                 //MediaEntity m[] = a.getMediaEntities();
                 dataset.add(item);
                 int pos = dataset.indexOf(item);
-                new DownloadImagesTask(pos, mAdapter, MainActivity.this).executeOnExecutor(THREAD_POOL_EXECUTOR, item);
+                new DownloadImagesTask(pos, mAdapter, MainActivity.this).executeOnExecutor(DownloadImagesTask.THREAD_POOL_EXECUTOR, item);
             }
 
             return null;
