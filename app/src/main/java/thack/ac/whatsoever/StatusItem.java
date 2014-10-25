@@ -13,7 +13,7 @@ import twitter4j.URLEntity;
 /**
  * Created by paradite on 23/9/14.
  */
-public class StatusItem implements Comparable<StatusItem>, Serializable {
+public class StatusItem implements Comparable<StatusItem> {
     private String user;
     private String content;
     private String content_pic_url;

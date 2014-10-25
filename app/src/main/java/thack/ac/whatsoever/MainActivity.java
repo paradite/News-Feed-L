@@ -73,7 +73,7 @@ public class MainActivity extends Activity {
     private boolean TWITTER_EXECUTED   = false;
     private boolean INSTA_EXECUTED     = false;
     //Track number of pictures still need to be downloaded
-    private int     pic_download_tasks = 0;
+    public int     pic_download_tasks = 0;
 
     public String DEFAULT_QUERY = "Google Glass";
 
@@ -353,11 +353,10 @@ public class MainActivity extends Activity {
                         new_item.setLocation(s.getPlace().getName());
                     }
                     dataset.add(new_item);
-                    new DownloadImagesTask().execute(new_item);
+                    int pos = dataset.indexOf(new_item);
+                    new DownloadImagesTask(pos, mAdapter, MainActivity.this).executeOnExecutor(THREAD_POOL_EXECUTOR, new_item);
                 }
 
-                //Sort by time
-                Collections.sort(dataset);
             } catch (TwitterException te) {
                 te.printStackTrace();
                 runOnUiThread(new Runnable() {
@@ -451,11 +450,10 @@ public class MainActivity extends Activity {
                         new_item.setContent_pic_url(picture_url);
                     }
                     dataset.add(new_item);
-                    new DownloadImagesTask().execute(new_item);
+                    int pos = dataset.indexOf(new_item);
+                    new DownloadImagesTask(pos, mAdapter, MainActivity.this).executeOnExecutor(THREAD_POOL_EXECUTOR, new_item);
                 }
 
-                //Sort by time
-                Collections.sort(dataset);
             } catch (Exception e) {
                 e.printStackTrace();
                 runOnUiThread(new Runnable() {
@@ -550,11 +548,10 @@ public class MainActivity extends Activity {
                 //}
                 //MediaEntity m[] = a.getMediaEntities();
                 dataset.add(item);
-                new DownloadImagesTask().execute(item);
+                int pos = dataset.indexOf(item);
+                new DownloadImagesTask(pos, mAdapter, MainActivity.this).executeOnExecutor(THREAD_POOL_EXECUTOR, item);
             }
 
-            //Sort by time
-            Collections.sort(dataset);
             return null;
         }
 
@@ -571,7 +568,7 @@ public class MainActivity extends Activity {
     /**
      * Try to dismiss the progress bar after fetching all the data
      */
-    private void tryDismissBar() {
+    public void tryDismissBar() {
         if(TWITTER_EXECUTED && PLUS_EXECUTED && INSTA_EXECUTED){
             if(pic_download_tasks > 0){
                 if (titleView != null) {
@@ -579,12 +576,16 @@ public class MainActivity extends Activity {
                 }
             }else if(mCardView.getVisibility() != View.GONE){
                 mCardView.setVisibility(View.GONE);
+                //Sort posts by time
+                Collections.sort(dataset);
                 Toast.makeText(getApplicationContext(), "Search completed.", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     public class DownloadAllImagesTask extends AsyncTask<ArrayList<StatusItem>, Void, Void> {
+
+
         @Override
         protected Void doInBackground(ArrayList<StatusItem>... arrayLists) {
             for (StatusItem statusItem : arrayLists[0]) {
@@ -607,34 +608,6 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void v) {
 
-        }
-    }
-
-    public class DownloadImagesTask extends AsyncTask<StatusItem, Void, Void> {
-
-        @Override
-        protected Void doInBackground(StatusItem... statusItems) {
-            Log.e(TAG, "DownloadImagesTask: ");
-            String profile_url = statusItems[0].getProfile_url();
-            String pic_url = statusItems[0].getContent_pic_url();
-            statusItems[0].setProfileDrawable(Utils.LoadImageFromWebOperations(profile_url, 1));
-            if (pic_url != null) {
-                //Log.e(TAG, statusItems[0].getSource() + statusItems[0].getUser() + ": " + pic_url);
-                statusItems[0].setContentDrawable(Utils.LoadImageFromWebOperations(pic_url, 2));
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void v) {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    mAdapter.notifyDataSetChanged();
-                }
-            });
-            pic_download_tasks--;
-            Log.e(TAG, "pic: " + pic_download_tasks);
-            tryDismissBar();
         }
     }
 
