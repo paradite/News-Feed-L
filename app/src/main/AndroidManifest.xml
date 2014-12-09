@@ -3,7 +3,8 @@
     package="thack.ac.whatsoever"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-sdk tools:node="replace" />
+    <!--<uses-sdk-->
+        <!--tools:node="replace" />-->
 
     <uses-permission android:name="android.permission.INTERNET" />
 
